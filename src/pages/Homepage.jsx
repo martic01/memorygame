@@ -607,4 +607,4 @@ const SimonGame = () => {
   );
 };
 
-export default /;l8eGame;
+export default SimonGame;
