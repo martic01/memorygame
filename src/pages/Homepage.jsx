@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import backgroudMusic from '../assets/sounds/first.mp3';
 
 // Color configuration
 const colors = [
@@ -19,6 +20,9 @@ const SimonGame = () => {
   const [players, setPlayers] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
+  const [savedGameState, setSavedGameState] = useState(null);
   
   // Mobile overlay states
   const [showLeftOverlay, setShowLeftOverlay] = useState(false);
@@ -28,6 +32,131 @@ const SimonGame = () => {
   const timeoutRef = useRef(null);
   const timeoutsRef = useRef([]);
   const hasResumedRef = useRef(false);
+  
+  // Audio refs
+  const audioContextRef = useRef(null);
+  const backgroundMusicRef = useRef(null);
+  const soundEffectsRef = useRef({});
+  const audioInitializedRef = useRef(false);
+
+  // Initialize audio
+  useEffect(() => {
+    // Initialize audio context (needed for browsers that require user interaction)
+    audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Load mute preference from localStorage
+    const savedMutePreference = localStorage.getItem('simonMuted');
+    if (savedMutePreference) {
+      setIsMuted(JSON.parse(savedMutePreference));
+    }
+    
+    // Pre-load sound effects
+    loadSoundEffects();
+    
+    // Create background music audio element
+    const bgMusic = new Audio(backgroudMusic);
+    bgMusic.loop = true;
+    bgMusic.volume = 0.3; // Set volume to 30%
+    backgroundMusicRef.current = bgMusic;
+    
+    return () => {
+      // Clean up audio on unmount
+      if (backgroundMusicRef.current) {
+        backgroundMusicRef.current.pause();
+        backgroundMusicRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  // Initialize audio on first user interaction
+  const initializeAudio = useCallback(() => {
+    if (!audioInitializedRef.current && audioContextRef.current) {
+      audioContextRef.current.resume().then(() => {
+        audioInitializedRef.current = true;
+        console.log('Audio context resumed');
+      }).catch(e => console.log('Failed to resume audio context:', e));
+    }
+  }, []);
+
+  // Load sound effects
+  const loadSoundEffects = useCallback(() => {
+    // Define paths to your sound effect files
+    const soundFiles = {
+      '1': '/sounds/red.mp3',
+      '2': '/sounds/blue.mp3',
+      '3': '/sounds/green.mp3',
+      '4': '/sounds/black.mp3',
+      'cheer': '/sounds/cheer.mp3',
+      'gameover': '/sounds/gameover.mp3'
+    };
+    
+    // Create audio elements for each sound
+    Object.entries(soundFiles).forEach(([key, path]) => {
+      const audio = new Audio(path);
+      audio.preload = 'auto';
+      soundEffectsRef.current[key] = audio;
+    });
+  }, []);
+
+  // Play sound effect
+  const playSound = useCallback((soundId) => {
+    if (isMuted) return;
+    
+    const sound = soundEffectsRef.current[soundId];
+    if (sound) {
+      // Clone the audio to allow overlapping sounds
+      const soundClone = sound.cloneNode();
+      soundClone.volume = 0.5;
+      soundClone.play().catch(e => console.log('Audio playback failed:', e));
+    }
+  }, [isMuted]);
+
+  // Start background music
+  const startBackgroundMusic = useCallback(() => {
+    if (isMuted || !backgroundMusicRef.current) return;
+    
+    // Initialize audio first
+    initializeAudio();
+    
+    // Play background music
+    backgroundMusicRef.current.play().catch(e => {
+      console.log('Background music failed to play automatically:', e);
+      // Most browsers require user interaction first
+    });
+  }, [isMuted, initializeAudio]);
+
+  // Stop background music
+  const stopBackgroundMusic = useCallback(() => {
+    if (backgroundMusicRef.current) {
+      backgroundMusicRef.current.pause();
+      backgroundMusicRef.current.currentTime = 0;
+    }
+  }, []);
+
+  // Toggle mute
+  const toggleMute = useCallback(() => {
+    setIsMuted(prev => {
+      const newMuted = !prev;
+      if (newMuted) {
+        stopBackgroundMusic();
+      } else if (gameStarted && !gameOver) {
+        startBackgroundMusic();
+      }
+      return newMuted;
+    });
+  }, [gameStarted, gameOver, startBackgroundMusic, stopBackgroundMusic]);
+
+  // Start background music when game starts
+  useEffect(() => {
+    if (gameStarted && !gameOver && !isMuted) {
+      startBackgroundMusic();
+    } else {
+      stopBackgroundMusic();
+    }
+  }, [gameStarted, gameOver, isMuted, startBackgroundMusic, stopBackgroundMusic]);
 
   // Load all saved state from localStorage on initial mount
   useEffect(() => {
@@ -40,17 +169,20 @@ const SimonGame = () => {
     if (savedGameState) {
       try {
         const gameState = JSON.parse(savedGameState);
-        setPlayerName(gameState.playerName || '');
-        setIsNameSubmitted(gameState.isNameSubmitted || false);
-        setGameActive(gameState.gameActive || false);
-        setGameOver(gameState.gameOver || false);
-        setRandomArray(gameState.randomArray || []);
-        setUserSelectionArray(gameState.userSelectionArray || []);
-        setGameStarted(gameState.gameStarted || false);
+        setSavedGameState(gameState);
         
-        // Mark that we've loaded from localStorage
+        // Only show resume prompt if there's an active game
         if (gameState.gameStarted && !gameState.gameOver && gameState.randomArray.length > 0) {
-          hasResumedRef.current = true;
+          setShowResumePrompt(true);
+        } else {
+          // If no active game, just load the state
+          setPlayerName(gameState.playerName || '');
+          setIsNameSubmitted(gameState.isNameSubmitted || false);
+          setGameActive(gameState.gameActive || false);
+          setGameOver(gameState.gameOver || false);
+          setRandomArray(gameState.randomArray || []);
+          setUserSelectionArray(gameState.userSelectionArray || []);
+          setGameStarted(gameState.gameStarted || false);
         }
       } catch (e) {
         console.error('Failed to load game state', e);
@@ -59,10 +191,57 @@ const SimonGame = () => {
     setIsInitialLoad(false);
   }, []);
 
-  // Resume game after initial load if there was an active game
+  // Handle resume game
+  const handleResumeGame = useCallback(() => {
+    if (savedGameState) {
+      setPlayerName(savedGameState.playerName || '');
+      setIsNameSubmitted(savedGameState.isNameSubmitted || false);
+      setGameActive(savedGameState.gameActive || false);
+      setGameOver(savedGameState.gameOver || false);
+      setRandomArray(savedGameState.randomArray || []);
+      setUserSelectionArray(savedGameState.userSelectionArray || []);
+      setGameStarted(savedGameState.gameStarted || false);
+      
+      // Mark that we've loaded from localStorage
+      if (savedGameState.gameStarted && !savedGameState.gameOver && savedGameState.randomArray.length > 0) {
+        hasResumedRef.current = true;
+      }
+      
+      setShowResumePrompt(false);
+      setSavedGameState(null);
+      
+      // Start background music if needed
+      if (!isMuted && savedGameState.gameStarted && !savedGameState.gameOver) {
+        setTimeout(() => {
+          startBackgroundMusic();
+        }, 500);
+      }
+    }
+  }, [savedGameState, isMuted, startBackgroundMusic]);
+
+  // Handle restart game (discard saved state)
+  const handleRestartGame = useCallback(() => {
+    setShowResumePrompt(false);
+    setSavedGameState(null);
+    
+    // Clear game state from localStorage
+    localStorage.removeItem('simonGameState');
+    
+    // Reset to name screen
+    setPlayerName('');
+    setIsNameSubmitted(false);
+    setGameActive(false);
+    setGameOver(false);
+    setGameStarted(false);
+    setRandomArray([]);
+    setUserSelectionArray([]);
+    setActiveColor(null);
+  }, []);
+
+  // Resume game after user chooses to continue
   useEffect(() => {
     if (!isInitialLoad && hasResumedRef.current && gameStarted && !gameOver && randomArray.length > 0) {
-      console.log('Resuming game after refresh');
+      console.log('Resuming game after user choice');
       hasResumedRef.current = false;
       
       // Clear any existing timeouts
@@ -79,6 +258,7 @@ const SimonGame = () => {
         if (index < randomArray.length) {
           const colorId = randomArray[index].toString();
           setActiveColor(colorId);
+          playSound(colorId);
           
           // Turn off after 500ms
           setTimeout(() => {
@@ -101,7 +281,7 @@ const SimonGame = () => {
       const startTimeout = setTimeout(playNext, 200);
       timeoutsRef.current.push(startTimeout);
     }
-  }, [isInitialLoad, gameStarted, gameOver, randomArray]);
+  }, [isInitialLoad, gameStarted, gameOver, randomArray, playSound]);
 
   // Save game state to localStorage whenever relevant state changes
   useEffect(() => {
@@ -125,6 +305,11 @@ const SimonGame = () => {
     if (players.length > 0) localStorage.setItem('simonPlayers', JSON.stringify(players));
   }, [players]);
 
+  // Save mute preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('simonMuted', JSON.stringify(isMuted));
+  }, [isMuted]);
+
   // Clear all timeouts on unmount
   useEffect(() => {
     return () => {
@@ -143,8 +328,9 @@ const SimonGame = () => {
   // Function to beep a color
   const beep = useCallback((colorId) => {
     setActiveColor(colorId);
+    playSound(colorId);
     removeShadow();
-  }, [removeShadow]);
+  }, [playSound, removeShadow]);
 
   // Function to blink a random box
   const boxBlink = useCallback(() => {
@@ -171,6 +357,9 @@ const SimonGame = () => {
 
   // Start game
   const startGame = useCallback(() => {
+    // Initialize audio on first game start
+    initializeAudio();
+    
     // Clear any existing timeouts
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
@@ -191,7 +380,7 @@ const SimonGame = () => {
     
     timeoutsRef.current.push(timeout);
     
-  }, [boxBlink]);
+  }, [boxBlink, initializeAudio]);
 
   // Handle color click
   const handleColorClick = useCallback((colorId) => {
@@ -224,6 +413,7 @@ const SimonGame = () => {
         // Wrong - game over
         setGameOver(true);
         setGameActive(false);
+        playSound('gameover');
         
         // Save score (only if they had at least 1 correct)
         if (randomArray.length - 1 > 0) {
@@ -241,7 +431,7 @@ const SimonGame = () => {
         }
       }
     }
-  }, [gameActive, gameOver, gameStarted, userSelectionArray, randomArray, playerName, beep, boxBlink]);
+  }, [gameActive, gameOver, gameStarted, userSelectionArray, randomArray, playerName, beep, boxBlink, playSound]);
 
   // Reset game and go back to name entry
   const newPlayer = useCallback(() => {
@@ -363,6 +553,41 @@ const SimonGame = () => {
 
   return (
     <div className="game-container min-h-screen w-full bg-gradient-to-br from-slate-900 to-purple-900 p-2 sm:p-4 relative overflow-x-hidden">
+      
+      {/* Resume Game Prompt */}
+      {showResumePrompt && (
+        <div className="resume-prompt-overlay fixed inset-0 flex items-center justify-center z-[60] p-4">
+          <div className="resume-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => {}}></div>
+          <div className="resume-content relative bg-white/10 backdrop-blur-2xl rounded-2xl p-8 max-w-md w-full border border-white/30 animate-slideIn">
+            <div className="text-center">
+              <div className="resume-icon w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full flex items-center justify-center border-2 border-white/50 text-4xl">
+                🎮
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Welcome Back!</h2>
+              <p className="text-white/70 text-lg mb-2">{savedGameState?.playerName}</p>
+              <p className="text-white/50 text-sm mb-6">
+                You had a score of <span className="text-yellow-400 font-bold text-xl">{savedGameState?.randomArray?.length - 1}</span> colors remembered
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={handleResumeGame} 
+                  className="resume-button w-full px-6 py-3 bg-gradient-to-r from-green-500/30 to-emerald-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition text-lg flex items-center justify-center gap-2"
+                >
+                  <span>▶</span> Continue Game
+                </button>
+                
+                <button 
+                  onClick={handleRestartGame} 
+                  className="restart-button w-full px-6 py-3 bg-gradient-to-r from-red-500/30 to-orange-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition text-lg flex items-center justify-center gap-2"
+                >
+                  <span>⟲</span> Start New Game
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Game Over Modal */}
       {gameOver && (
@@ -492,7 +717,9 @@ const SimonGame = () => {
           <div className="glass-card game-board-card backdrop-blur-2xl bg-[#111928]/75 rounded-2xl p-4 sm:p-6 border border-white/10">
             
             <div className="game-header flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-white/10">
-              <div className="logo-container px-4 py-2 bg-white/5 rounded-xl border border-white/20"><h1 className="game-title-small text-xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">🧠Memory🧠</h1></div>
+              <div className="logo-container px-4 py-2 bg-white/5 rounded-xl border border-white/20">
+                <h1 className="game-title-small text-xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">🧠Memory🧠</h1>
+              </div>
               
               {/* Mobile Toggle Buttons */}
               <div className="mobile-toggle-group flex lg:hidden gap-2">
@@ -507,9 +734,20 @@ const SimonGame = () => {
                 </div>
               </div>
               
-              <div className="score-container px-4 py-2 bg-white/10 rounded-xl border border-white/20">
-                <p className="score-label text-xs text-white/60">SCORE</p>
-                <p className="score-value text-xl sm:text-2xl font-bold text-white">{randomArray.length > 0 ? randomArray.length - 1 : 0}</p>
+              <div className="flex items-center gap-2">
+                {/* Mute/Unmute Button */}
+                <button
+                  onClick={toggleMute}
+                  className="mute-button px-3 py-2 bg-white/10 rounded-xl border border-white/20 hover:bg-white/15 transition flex items-center gap-1 text-lg"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? '🔇' : '🔊'}
+                </button>
+                
+                <div className="score-container px-4 py-2 bg-white/10 rounded-xl border border-white/20">
+                  <p className="score-label text-xs text-white/60">SCORE</p>
+                  <p className="score-value text-xl sm:text-2xl font-bold text-white">{randomArray.length > 0 ? randomArray.length - 1 : 0}</p>
+                </div>
               </div>
             </div>
 
