@@ -632,7 +632,7 @@ const SimonGame = () => {
           </div>
           <div className="space-y-4">
             <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">1</span></div><p className="text-white/70 text-sm">Watch the sequence of colors</p></div>
-            <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">2</span></div><p className="text-white/70 text-sm">Repeat by clicking the colors</p></div>
+            <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">2</span></div><p className="text-white/70 text-sm">For every round you must click on the previously blinked colors and the recent one</p></div>
             <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">3</span></div><p className="text-white/70 text-sm">Each correct round adds one color</p></div>
             <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">4</span></div><p className="text-white/70 text-sm">Wrong click = game over!</p></div>
           </div>
@@ -699,8 +699,8 @@ const SimonGame = () => {
             </div>
             <div className="space-y-4">
               <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">1</span></div><p className="text-white/70 text-sm">Watch the sequence</p></div>
-              <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">2</span></div><p className="text-white/70 text-sm">Repeat in order</p></div>
-              <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">3</span></div><p className="text-white/70 text-sm">Each round adds one color</p></div>
+              <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">2</span></div><p className="text-white/70 text-sm">For every round you must click on the previously blinked colors and the recent one</p></div>
+              <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">3</span></div><p className="text-white/70 text-sm">Each correct round adds one color</p></div>
               <div className="flex gap-3"><div className="step-number w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span className="step-text text-purple-400 text-xs font-bold">4</span></div><p className="text-white/70 text-sm">Wrong click = game over</p></div>
             </div>
             <div className="player-info-container mt-6 pt-6 border-t border-white/10">
