@@ -72,9 +72,11 @@ const GameBoard = ({
             >
               <span className="flex items-center gap-2">
                 <span className="text-xl">{mode.icon}</span>
-                <span className="text-white text-sm font-medium hidden sm:inline">{mode.name}</span>
+                <span className="text-white text-sm font-medium  sm:inline">{mode.name}</span>
               </span>
+              {mode.name !== 'Quick Game' &&   <p className='text-white/60 text-xs mt-1'>finish song to win</p>}
             </button>
+            
           ))}
         </div>
       </div>

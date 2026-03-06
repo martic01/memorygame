@@ -127,10 +127,10 @@ const SimonGame = () => {
   const getRandomMusicIndex = useCallback(() => {
     const mode = modeMusic[selectedMode];
     if (!mode) return 0;
-    
+
     const musicArray = mode.music;
     const randomIndex = Math.floor(Math.random() * musicArray.length);
-    
+
     console.log(`%c🎲 NEW GAME RANDOM SELECTION: index ${randomIndex} for ${selectedMode} mode`, 'color: yellow; font-weight: bold');
     return randomIndex;
   }, [selectedMode]);
@@ -160,10 +160,10 @@ const SimonGame = () => {
       console.log(`Fixing invalid music index: ${currentMusicIndex} -> ${safeIndex}`);
       setCurrentMusicIndex(safeIndex);
     }
-    
+
     const musicFile = mode.music[safeIndex];
     console.log(`%c🎵 PLAYING music index ${safeIndex} for ${selectedMode} mode:`, 'color: cyan', musicFile);
-    
+
     try {
       const bgMusic = new Audio(musicFile);
       bgMusic.loop = mode.loop;
@@ -387,14 +387,14 @@ const SimonGame = () => {
       setUserSelectionArray(savedGameState.userSelectionArray || []);
       setGameStarted(savedGameState.gameStarted || false);
       setSelectedMode(savedGameState.selectedMode || 'quickgame');
-      
+
       // IMPORTANT: Use the saved music index, don't generate new random
-      const savedIndex = savedGameState.currentMusicIndex !== undefined ? 
+      const savedIndex = savedGameState.currentMusicIndex !== undefined ?
         savedGameState.currentMusicIndex : currentMusicIndexRef.current;
-      
+
       console.log(`%c🔄 RESUMING game with saved music index: ${savedIndex}`, 'color: blue');
       setCurrentMusicIndex(savedIndex);
-      
+
       setKingBadge(savedGameState.kingBadge || false);
       setWarningCount(savedGameState.warningCount || 0);
 
@@ -556,7 +556,7 @@ const SimonGame = () => {
     }
 
     console.log('%c🎮 Starting NEW game with mode: ' + selectedMode, 'color: green; font-size: 14px');
-    
+
     initializeAudio();
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
@@ -567,19 +567,19 @@ const SimonGame = () => {
     setGameOver(false);
     setGameWon(false);
     setGameStarted(true);
-    
+
     // Generate random music index ONLY for new games
     const randomIndex = getRandomMusicIndex();
     console.log(`%c🎲 NEW GAME - Setting music index to: ${randomIndex}`, 'color: yellow');
     setCurrentMusicIndex(randomIndex);
-    
+
     // Reset warning count for new game
     setWarningCount(0);
     setInactivitySeconds(20);
 
     // Stop current music and start fresh with random song
     stopBackgroundMusic();
-    
+
     // Small delay to ensure music starts after game initializes
     setTimeout(() => {
       if (!isMuted) {
@@ -742,7 +742,7 @@ const SimonGame = () => {
   // Show name screen if name not submitted
   if (!isNameSubmitted) {
     return (
-      <NameScreen 
+      <NameScreen
         playerName={playerName}
         setPlayerName={setPlayerName}
         handleNameSubmit={handleNameSubmit}
@@ -754,20 +754,20 @@ const SimonGame = () => {
     <div className="game-container min-h-screen w-full bg-gradient-to-br from-slate-900 to-purple-900 p-2 sm:p-4 relative overflow-x-hidden">
 
       {/* Modals */}
-      <WarningModal 
+      <WarningModal
         show={showWarningModal}
         onContinue={resumeGame}
         onQuit={quitGame}
       />
 
-      <VictoryModal 
+      <VictoryModal
         show={showVictoryModal}
         selectedMode={selectedMode}
         score={randomArray.length - 1}
         onPlayAgain={playAgain}
       />
 
-      <ResumeModal 
+      <ResumeModal
         show={showResumePrompt}
         playerName={savedGameState?.playerName}
         score={savedGameState?.randomArray?.length - 1}
@@ -775,7 +775,7 @@ const SimonGame = () => {
         onRestart={handleRestartGame}
       />
 
-      <GameOverModal 
+      <GameOverModal
         show={gameOver && !gameWon}
         score={randomArray.length - 1}
         onPlayAgain={playAgain}
@@ -783,7 +783,7 @@ const SimonGame = () => {
       />
 
       {/* Mobile Floating Buttons */}
-      <MobileFloatingButtons 
+      <MobileFloatingButtons
         showLeftOverlay={showLeftOverlay}
         showRightOverlay={showRightOverlay}
         setShowLeftOverlay={setShowLeftOverlay}
@@ -791,7 +791,14 @@ const SimonGame = () => {
         toggleMute={toggleMute}
         isMuted={isMuted}
         closeOverlays={closeOverlays}
+        kingBadge={kingBadge}
+        players={players}
+        getRankStyle={getRankStyle}
+        getRankIcon={getRankIcon}
       />
+
+
+
 
       {/* Main layout */}
       <div className="main-layout w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-4 lg:gap-6 p-4">
@@ -801,7 +808,7 @@ const SimonGame = () => {
 
         {/* Middle Column - Game Board */}
         <div className="w-full">
-          <GameBoard 
+          <GameBoard
             playerName={playerName}
             kingBadge={kingBadge}
             gameStarted={gameStarted}
@@ -822,7 +829,7 @@ const SimonGame = () => {
         </div>
 
         {/* Right Column - Desktop */}
-        <RightColumn 
+        <RightColumn
           players={players}
           setPlayers={setPlayers}
           getRankStyle={getRankStyle}
