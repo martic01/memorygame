@@ -7,6 +7,7 @@
     opacity: 0;
     transform: scale(0.9) translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -18,6 +19,7 @@
     transform: translateY(-25%);
     animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
   }
+
   50% {
     transform: translateY(0);
     animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
@@ -28,6 +30,7 @@
   0%, 100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -96,7 +99,7 @@
 }
 
 .game-title {
-  font-size: 2.25rem;
+  font-size: 1.29rem;
   font-weight: 700;
   background: linear-gradient(to right, white, #e9d5ff);
   -webkit-background-clip: text;
@@ -107,7 +110,7 @@
 }
 
 .game-title-small {
-  font-size: 1.25rem;
+  font-size: 0.8rem;
   font-weight: 700;
   background: linear-gradient(to right, white, #e9d5ff);
   -webkit-background-clip: text;
@@ -217,11 +220,12 @@
 
 /* Show side columns on desktop */
 @media (min-width: 1024px) {
+
   .left-column,
   .right-column {
     display: block;
   }
-  
+
   .middle-column {
     max-width: 100%;
   }
@@ -238,10 +242,21 @@
   width: 100%;
 }
 
-@media (max-width: 639px) {
+@media (max-width:740px) {
   .glass-card {
     padding: 1.2rem;
     border-radius: 1.25rem;
+  }
+
+  .game-board-card {
+    width: 100%;
+    margin: 0 auto;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
   }
 }
 
@@ -268,7 +283,7 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .player-badge {
     order: -1;
     text-align: center;
@@ -356,6 +371,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: 100%;
 }
 
 @media (min-width: 640px) {
@@ -402,6 +418,7 @@
   aspect-ratio: 1 / 1;
   width: 100%;
   max-width: 140px;
+  
   border-radius: 1.25rem;
   border-width: 2px;
   position: relative;
@@ -410,22 +427,26 @@
   margin: 0 auto;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 740px) {
   .color-button {
     max-width: 160px;
     border-radius: 1.5rem;
+    height: 200px;
   }
 }
 
 @media (min-width: 1024px) {
   .color-button {
     max-width: 140px;
+    height:unset ;
+
   }
 }
 
 @media (min-width: 1280px) {
   .color-button {
     max-width: 160px;
+      height:unset ;
   }
 }
 
@@ -511,10 +532,13 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .status-container {
     margin-right: 0;
     margin-bottom: 0.5rem;
+  }
+  .color-button{
+    height: 200px;
   }
 }
 
@@ -959,12 +983,12 @@
   .hide-mobile {
     display: none;
   }
-  
+
   .mobile-toggle-group {
     display: flex !important;
     gap: 0.5rem;
   }
-  
+
   .mobile-toggle-button {
     display: flex;
     align-items: center;
@@ -978,12 +1002,12 @@
     font-weight: 500;
     transition: all 0.2s ease;
   }
-  
+
   .mobile-toggle-button:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.2);
   }
-  
+
   .mobile-overlay {
     position: fixed;
     top: 0;
@@ -994,34 +1018,34 @@
     transition: transform 0.3s ease-out;
     padding: 1rem;
   }
-  
+
   .mobile-overlay.left {
     left: 0;
     transform: translateX(-100%);
   }
-  
+
   .mobile-overlay.right {
     right: 0;
     transform: translateX(100%);
   }
-  
+
   .mobile-overlay.active {
     transform: translateX(0);
   }
-  
+
   .mobile-overlay .glass-card {
     height: 100%;
     overflow-y: auto;
     margin: 0;
     padding: 1.5rem;
   }
-  
+
   .overlay-header {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 1rem;
   }
-  
+
   .close-overlay {
     padding: 0.5rem;
     background: rgba(255, 255, 255, 0.1);
@@ -1030,12 +1054,12 @@
     color: white;
     transition: all 0.2s ease;
   }
-  
+
   .close-overlay:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.2);
   }
-  
+
   .overlay-backdrop {
     position: fixed;
     top: 0;
@@ -1052,15 +1076,15 @@
   .mobile-toggle-group {
     display: none !important;
   }
-  
+
   .mobile-overlay {
     display: none;
   }
-  
+
   .overlay-backdrop {
     display: none;
   }
-  
+
   .hide-mobile {
     display: block;
   }
@@ -1071,57 +1095,57 @@
   .game-container {
     padding: 0.5rem;
   }
-  
+
   .main-layout {
     padding: 0.5rem;
   }
-  
+
   .glass-card {
     padding: 1rem;
   }
-  
+
   .board-container {
     padding: 1rem;
   }
-  
+
   .board-container .grid {
     gap: 0.75rem;
     max-width: 280px;
   }
-  
+
   .color-button {
     max-width: 120px;
   }
-  
+
   .game-header {
     margin-bottom: 0.75rem;
     padding-bottom: 0.75rem;
   }
-  
+
   .control-section {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
   }
-  
+
   .mobile-toggle-button {
     padding: 0.4rem 0.6rem !important;
   }
-  
+
   .toggle-text {
     display: none;
   }
-  
+
   .mobile-toggle-button svg {
     width: 1.25rem;
     height: 1.25rem;
   }
-  
+
   .cheer-message {
     font-size: 1.25rem;
     white-space: normal;
     text-align: center;
   }
-  
+
   .cheer-content {
     padding: 0.75rem 1.5rem;
   }
@@ -1147,16 +1171,54 @@
 }
 
 /* Utility classes */
-.text-white\/50 { color: rgba(255, 255, 255, 0.5); }
-.text-white\/30 { color: rgba(255, 255, 255, 0.3); }
-.text-white\/70 { color: rgba(255, 255, 255, 0.7); }
-.text-white\/80 { color: rgba(255, 255, 255, 0.8); }
-.text-white\/90 { color: rgba(255, 255, 255, 0.9); }
-.text-white\/60 { color: rgba(255, 255, 255, 0.6); }
-.text-white\/40 { color: rgba(255, 255, 255, 0.4); }
-.bg-white\/5 { background: rgba(255, 255, 255, 0.05); }
-.bg-white\/10 { background: rgba(255, 255, 255, 0.1); }
-.border-white\/10 { border-color: rgba(255, 255, 255, 0.1); }
-.border-white\/20 { border-color: rgba(255, 255, 255, 0.2); }
-.border-white\/30 { border-color: rgba(255, 255, 255, 0.3); }
-.opacity-80 { opacity: 0.8; }
+.text-white\/50 {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.text-white\/30 {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.text-white\/70 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.text-white\/80 {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.text-white\/90 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.text-white\/60 {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.text-white\/40 {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.bg-white\/5 {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.bg-white\/10 {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.border-white\/20 {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.border-white\/30 {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.opacity-80 {
+  opacity: 0.8;
+}
