@@ -75,17 +75,17 @@ const GameBoard = ({
             </div>
           )}
 
-          <button
+          {/* <button
             onClick={toggleMute}
             style={{ padding: '5px 9px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
             onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-          >{isMuted ? '🔇' : '🔊'}</button>
+          >{isMuted ? '🔇' : '🔊'}</button> */}
         </div>
       </div>
 
       {/* ── Mode selector ── */}
-      <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '5px', flexWrap: 'wrap', flexShrink: 0 }}>
+      <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '5px', flexWrap: 'wrap', flexShrink: 0 , width:'100%', justifyContent:'center'}}>
         {Object.entries(modeMusic).map(([key, mode]) => {
           const isActive = selectedMode === key;
           const ma = modeAccent[key] || '#00e5c8';

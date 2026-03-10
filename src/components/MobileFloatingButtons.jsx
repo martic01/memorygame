@@ -45,7 +45,6 @@ const MobileFloatingButtons = ({
         {[
           { icon:'❓', onClick: () => setShowLeftOverlay(true) },
           { icon:'🏆', onClick: () => setShowRightOverlay(true) },
-          { icon: isMuted ? '🔇' : '🔊', onClick: toggleMute },
         ].map((btn, i) => (
           <button key={i} onClick={btn.onClick} style={floatBtnStyle}
             onMouseEnter={e => e.currentTarget.style.borderColor='rgba(0,229,200,0.4)'}
