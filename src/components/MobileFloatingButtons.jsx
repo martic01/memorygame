@@ -62,51 +62,126 @@ const MobileFloatingButtons = ({
           </div>
           <button onClick={closeOverlays} style={{padding:'5px 9px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'2px',color:'rgba(255,255,255,0.6)',cursor:'pointer',fontSize:'11px'}}>✕</button>
         </div>
+        
         <div style={{flex:1,overflowY:'auto',padding:'16px',scrollbarWidth:'thin'}}>
-          {/* Rules */}
-          <div style={{marginBottom:'18px'}}>
-            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>Basic Rules</div>
-            {['Watch the color sequence','Repeat in the same order','Each round adds one color','Wrong click = game over'].map((t,i) => (
-              <div key={i} style={{display:'flex',gap:'9px',alignItems:'flex-start',marginBottom:'7px'}}>
-                <div style={{width:'18px',height:'18px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.3)',borderRadius:'2px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                  <span style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,color:'#00e5c8'}}>{i+1}</span>
-                </div>
-                <p style={{color:'rgba(255,255,255,0.55)',fontSize:'11px',lineHeight:1.5}}>{t}</p>
+          {/* Basic Rules */}
+          <div style={{marginBottom:'20px'}}>
+            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'10px'}}>BASIC RULES</div>
+            
+            <div style={{display:'flex',gap:'10px',alignItems:'flex-start',marginBottom:'12px'}}>
+              <div style={{width:'20px',height:'20px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.3)',borderRadius:'3px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'10px',fontWeight:700,color:'#00e5c8'}}>1</span>
               </div>
-            ))}
-          </div>
-          {/* Modes */}
-          <div style={{marginBottom:'18px'}}>
-            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>Game Modes</div>
-            {[
-              {icon:'⚡',name:'Quick Game',desc:'Endless loop · Play until mistake',accent:'59,130,246'},
-              {icon:'😎',name:'Easy Mode',desc:'5 songs · Win before song ends',accent:'34,197,94'},
-              {icon:'😇',name:'Hard Mode',desc:'2 songs · Beat the music',accent:'245,166,35'},
-              {icon:'👑',name:'King Mode',desc:'2 songs · Earn the crown badge',accent:'255,95,87'},
-            ].map((m,i) => (
-              <div key={i} style={{background:`rgba(${m.accent},0.06)`,border:`1px solid rgba(${m.accent},0.2)`,borderRadius:'3px',padding:'9px 11px',marginBottom:'6px'}}>
-                <div style={{display:'flex',alignItems:'center',gap:'7px',marginBottom:'3px'}}>
-                  <span style={{fontSize:'13px'}}>{m.icon}</span>
-                  <span style={{fontFamily:"'Orbitron',monospace",fontSize:'10px',fontWeight:700,color:`rgb(${m.accent})`,letterSpacing:'0.05em'}}>{m.name}</span>
-                </div>
-                <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px'}}>{m.desc}</p>
+              <p style={{color:'rgba(255,255,255,0.7)',fontSize:'11px',lineHeight:1.5}}>Watch the sequence of colors that light up</p>
+            </div>
+            
+            <div style={{display:'flex',gap:'10px',alignItems:'flex-start',marginBottom:'12px'}}>
+              <div style={{width:'20px',height:'20px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.3)',borderRadius:'3px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'10px',fontWeight:700,color:'#00e5c8'}}>2</span>
               </div>
-            ))}
+              <p style={{color:'rgba(255,255,255,0.7)',fontSize:'11px',lineHeight:1.5}}>Repeat the colors in the exact same order</p>
+            </div>
+            
+            <div style={{display:'flex',gap:'10px',alignItems:'flex-start',marginBottom:'12px'}}>
+              <div style={{width:'20px',height:'20px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.3)',borderRadius:'3px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'10px',fontWeight:700,color:'#00e5c8'}}>3</span>
+              </div>
+              <p style={{color:'rgba(255,255,255,0.7)',fontSize:'11px',lineHeight:1.5}}>Each correct round adds one new color to the sequence</p>
+            </div>
+            
+            <div style={{display:'flex',gap:'10px',alignItems:'flex-start',marginBottom:'12px'}}>
+              <div style={{width:'20px',height:'20px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.3)',borderRadius:'3px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'10px',fontWeight:700,color:'#00e5c8'}}>4</span>
+              </div>
+              <p style={{color:'rgba(255,255,255,0.7)',fontSize:'11px',lineHeight:1.5}}>Wrong click = Game Over!</p>
+            </div>
           </div>
-          {/* Timer */}
-          <div>
-            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>Timer</div>
-            <div style={{background:'rgba(245,166,35,0.06)',border:'1px solid rgba(245,166,35,0.2)',borderRadius:'3px',padding:'10px 12px'}}>
-              <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px',marginBottom:'6px'}}>⏱ 20s timer, resets on each click</p>
-              <div style={{background:'rgba(255,95,87,0.08)',border:'1px solid rgba(255,95,87,0.2)',borderRadius:'2px',padding:'7px 9px'}}>
-                <p style={{color:'#ff5f57',fontSize:'10px',fontFamily:"'Orbitron',monospace",marginBottom:'4px'}}>⚠ WARNING</p>
-                <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px'}}>Timeout → warning modal<br/>2nd timeout → game quits</p>
+
+          {/* Gameplay Example */}
+          <div style={{marginBottom:'20px',background:'rgba(0,229,200,0.05)',borderRadius:'4px',padding:'12px'}}>
+            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'#00e5c8',textTransform:'uppercase',marginBottom:'10px'}}>EXAMPLE</div>
+            
+            <p style={{color:'rgba(255,255,255,0.6)',fontSize:'11px',lineHeight:1.6, marginBottom:'8px'}}>
+              <span style={{color:'#00e5c8'}}>Level 1:</span> Red blinks → You click Red
+            </p>
+            <p style={{color:'rgba(255,255,255,0.6)',fontSize:'11px',lineHeight:1.6, marginBottom:'8px'}}>
+              <span style={{color:'#00e5c8'}}>Level 2:</span> New color Blue blinks → You click Red, then Blue
+            </p>
+            <p style={{color:'rgba(255,255,255,0.6)',fontSize:'11px',lineHeight:1.6, marginBottom:'8px'}}>
+              <span style={{color:'#00e5c8'}}>Level 3:</span> New color Green blinks → You click Red, Blue, Green
+            </p>
+            <p style={{color:'rgba(255,255,255,0.6)',fontSize:'11px',lineHeight:1.6, marginBottom:'8px'}}>
+              <span style={{color:'#00e5c8'}}>Level 4:</span> New color Yellow blinks → You click Red, Blue, Green, Yellow
+            </p>
+            
+            <div style={{marginTop:'10px',padding:'8px',background:'rgba(0,0,0,0.3)',borderRadius:'3px'}}>
+              <p style={{color:'#ff5f57',fontSize:'11px',fontWeight:600}}>⚠️ If you click the wrong color at any point, the game ends and your score is the number of colors you remembered correctly.</p>
+            </div>
+          </div>
+
+          {/* Game Modes */}
+          <div style={{marginBottom:'20px'}}>
+            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'10px'}}>GAME MODES</div>
+            
+            <div style={{background:'rgba(59,130,246,0.06)',border:'1px solid rgba(59,130,246,0.25)',borderRadius:'4px',padding:'10px',marginBottom:'8px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'4px'}}>
+                <span style={{fontSize:'16px'}}>⚡</span>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'11px',fontWeight:700,color:'#3b82f6'}}>QUICK GAME</span>
+              </div>
+              <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px'}}>Endless looping music • Play until you make a mistake</p>
+            </div>
+            
+            <div style={{background:'rgba(34,197,94,0.06)',border:'1px solid rgba(34,197,94,0.25)',borderRadius:'4px',padding:'10px',marginBottom:'8px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'4px'}}>
+                <span style={{fontSize:'16px'}}>😎</span>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'11px',fontWeight:700,color:'#22c55e'}}>EASY MODE</span>
+              </div>
+              <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px'}}>5 songs • 40 second timer • Win if score ≥ 5 when song ends</p>
+            </div>
+            
+            <div style={{background:'rgba(245,166,35,0.06)',border:'1px solid rgba(245,166,35,0.25)',borderRadius:'4px',padding:'10px',marginBottom:'8px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'4px'}}>
+                <span style={{fontSize:'16px'}}>😇</span>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'11px',fontWeight:700,color:'#f5a623'}}>HARD MODE</span>
+              </div>
+              <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px'}}>2 intense songs • 70 second timer • Win if score ≥ 10 when song ends</p>
+            </div>
+            
+            <div style={{background:'rgba(255,95,87,0.06)',border:'1px solid rgba(255,95,87,0.25)',borderRadius:'4px',padding:'10px',marginBottom:'8px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'4px'}}>
+                <span style={{fontSize:'16px'}}>👑</span>
+                <span style={{fontFamily:"'Orbitron',monospace",fontSize:'11px',fontWeight:700,color:'#ff5f57'}}>KING MODE</span>
+              </div>
+              <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px'}}>2 epic songs • Full song length • Win if score ≥ 15 to earn 👑 badge</p>
+            </div>
+          </div>
+
+          {/* Timer System */}
+          <div style={{marginBottom:'20px'}}>
+            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'10px'}}>⏱️ TIMER SYSTEM</div>
+            
+            <div style={{background:'rgba(245,166,35,0.06)',border:'1px solid rgba(245,166,35,0.25)',borderRadius:'4px',padding:'12px'}}>
+              <p style={{display:'flex',alignItems:'center',gap:'6px',color:'rgba(255,255,255,0.6)',fontSize:'11px',marginBottom:'10px'}}>
+                <span style={{color:'#f5a623'}}>⏱️</span> 20 second timer appears during gameplay
+              </p>
+              <p style={{display:'flex',alignItems:'center',gap:'6px',color:'rgba(255,255,255,0.6)',fontSize:'11px',marginBottom:'10px'}}>
+                <span style={{color:'#f5a623'}}>↻</span> Timer resets on every click
+              </p>
+              
+              <div style={{background:'rgba(255,95,87,0.08)',border:'1px solid rgba(255,95,87,0.25)',borderRadius:'3px',padding:'10px',marginTop:'8px'}}>
+                <p style={{color:'#ff5f57',fontSize:'11px',fontFamily:"'Orbitron',monospace",marginBottom:'6px'}}>⚠️ WARNING SYSTEM</p>
+                <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px',marginBottom:'4px'}}>• First timeout: Warning modal appears, music pauses</p>
+                <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px'}}>• Second timeout: Game over with NO score saved</p>
               </div>
             </div>
           </div>
+
+          {/* King Badge */}
           {kingBadge && (
-            <div style={{marginTop:'14px',background:'rgba(245,166,35,0.08)',border:'1px solid rgba(245,166,35,0.3)',borderRadius:'3px',padding:'10px',textAlign:'center'}}>
-              <span style={{color:'#f5a623',fontSize:'12px',fontFamily:"'Orbitron',monospace"}}>👑 KING STATUS ACTIVE</span>
+            <div style={{background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.4)',borderRadius:'4px',padding:'12px',textAlign:'center'}}>
+              <span style={{fontSize:'20px',display:'block',marginBottom:'6px'}}>👑</span>
+              <span style={{color:'#f5a623',fontSize:'11px',fontFamily:"'Orbitron',monospace",fontWeight:700}}>KING STATUS UNLOCKED</span>
+              <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px',marginTop:'6px'}}>You've conquered King Mode!</p>
             </div>
           )}
         </div>
@@ -121,6 +196,7 @@ const MobileFloatingButtons = ({
           </div>
           <button onClick={closeOverlays} style={{padding:'5px 9px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'2px',color:'rgba(255,255,255,0.6)',cursor:'pointer',fontSize:'11px'}}>✕</button>
         </div>
+        
         <div style={{flex:1,overflowY:'auto',padding:'12px',scrollbarWidth:'thin'}}>
           {players && players.length > 0 ? (
             <div>

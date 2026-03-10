@@ -8,10 +8,12 @@ import GameBoard from '../components/GameBoard';
 import { WarningModal, VictoryModal, ResumeModal, GameOverModal, FailureModal } from '../components/Modals';
 import MobileFloatingButtons from '../components/MobileFloatingButtons';
 
+// Mode durations - only for timed modes
 const MODE_DURATIONS = {
-  easy: 40000,
-  hard: 70000,
-  king: 40000
+  easy: 40000, // 40 seconds
+  hard: 70000, // 70 seconds
+  // king mode uses full song length - no timeout
+  // quick game loops forever - no timeout
 };
 
 const SCORE_THRESHOLDS = {
@@ -73,7 +75,7 @@ const SimonGame = () => {
   const gameWonRef = useRef(false);
   const gameFailedRef = useRef(false);
   const warningCountRef = useRef(0);
-  const isProcessingInactivityRef = useRef(false); // Add this to prevent double execution
+  const isProcessingInactivityRef = useRef(false);
 
   useEffect(() => { selectedModeRef.current = selectedMode; }, [selectedMode]);
   useEffect(() => { playerNameRef.current = playerName; }, [playerName]);
@@ -177,7 +179,7 @@ const SimonGame = () => {
   const playSound = useCallback((soundId) => {
     if (isMutedRef.current) return;
     const sound = soundEffectsRef.current[soundId];
-    if (sound) { const c = sound.cloneNode(); c.volume = 0.5; c.play().catch(() => { }); }
+    if (sound) { const c = sound.cloneNode(); c.volume = 1; c.play().catch(() => { }); }
   }, []);
 
   const getRandomMusicIndex = useCallback(() => {
@@ -307,15 +309,28 @@ const SimonGame = () => {
     const musicFile = mode.music[safeIndex];
     try {
       const bgMusic = new Audio(musicFile);
-      bgMusic.loop = mode.loop; bgMusic.volume = 0.3;
-      const duration = MODE_DURATIONS[selectedModeRef.current] || 40000;
-      scheduleModeTimeout(duration);
+      bgMusic.loop = mode.loop;
+      bgMusic.volume = 1;
+      
+      // Only set timeout for timed modes (easy and hard)
+      // King mode uses full song length - no timeout
+      // Quick game loops forever - no timeout
+      if (selectedModeRef.current === 'easy' || selectedModeRef.current === 'hard') {
+        const duration = MODE_DURATIONS[selectedModeRef.current];
+        scheduleModeTimeout(duration);
+      }
+      
+      // For king mode, we let the song play fully
+      // For quick game, it loops forever
+      
       bgMusic.addEventListener('ended', () => {
         if (!mode.loop) {
           if (modeTimeoutRef.current) { clearTimeout(modeTimeoutRef.current); modeTimeoutRef.current = null; }
           fadeOutMusic(() => checkGameEnd());
         }
+        // If mode.loop is true (quick game), do nothing on ended
       });
+      
       bgMusic.onerror = () => { };
       backgroundMusicRef.current = bgMusic;
       bgMusic.play().catch(() => { backgroundMusicRef.current = null; });
@@ -353,7 +368,6 @@ const SimonGame = () => {
     };
   }, []);
 
-  // FIXED: handleInactivity now uses refs to prevent double execution
   const handleInactivity = useCallback(() => {
     // Prevent double execution
     if (isProcessingInactivityRef.current) {
@@ -404,7 +418,6 @@ const SimonGame = () => {
     }, 100);
   }, [stopBackgroundMusic, stopInactivityTimer]);
 
-  // FIXED: startInactivityTimer prevents multiple timers
   const startInactivityTimer = useCallback(() => {
     // Prevent multiple timers
     if (inactivityIntervalRef.current) {
@@ -417,7 +430,6 @@ const SimonGame = () => {
     inactivityIntervalRef.current = setInterval(() => {
       setInactivitySeconds(prev => {
         if (prev <= 1) {
-          // Don't stop the timer here - let handleInactivity handle it
           handleInactivity();
           return 0;
         }
@@ -480,8 +492,8 @@ const SimonGame = () => {
     setShowVictoryModal(false); 
     setShowFailureModal(false); 
     setFinalScore(0);
-    setShowWarningModal(false); // Ensure warning modal is closed
-    isProcessingInactivityRef.current = false; // Reset processing flag
+    setShowWarningModal(false);
+    isProcessingInactivityRef.current = false;
 
     const mode = modeMusic[selectedModeRef.current];
     if (mode) {
@@ -489,15 +501,25 @@ const SimonGame = () => {
         try {
           const musicFile = mode.music[newMusicIndex];
           const bgMusic = new Audio(musicFile);
-          bgMusic.loop = mode.loop; bgMusic.volume = 0.3;
-          const duration = MODE_DURATIONS[selectedModeRef.current] || 40000;
-          scheduleModeTimeout(duration);
+          bgMusic.loop = mode.loop;
+          bgMusic.volume = 1;
+          
+          // Only set timeout for timed modes (easy and hard)
+          if (selectedModeRef.current === 'easy' || selectedModeRef.current === 'hard') {
+            const duration = MODE_DURATIONS[selectedModeRef.current];
+            scheduleModeTimeout(duration);
+          }
+          
+          // For king mode, we let the song play fully
+          // For quick game, it loops forever
+          
           bgMusic.addEventListener('ended', () => {
             if (!mode.loop) {
               if (modeTimeoutRef.current) { clearTimeout(modeTimeoutRef.current); modeTimeoutRef.current = null; }
               fadeOutMusic(() => checkGameEnd());
             }
           });
+          
           backgroundMusicRef.current = bgMusic;
           bgMusic.play().catch(() => { });
         } catch { }
@@ -558,7 +580,7 @@ const SimonGame = () => {
     setShowWarningModal(false);
     if (!isMutedRef.current && backgroundMusicRef.current) backgroundMusicRef.current.play();
     setGameActive(true);
-    startInactivityTimer(); // Restart the timer when resuming
+    startInactivityTimer();
   }, [startInactivityTimer]);
 
   const quitGame = useCallback(() => {
