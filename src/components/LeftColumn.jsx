@@ -1,185 +1,134 @@
 import React from 'react';
 
+const Section = ({ label, children }) => (
+  <div style={{marginBottom:'20px'}} >
+    <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>
+      {label}
+    </div>
+    {children}
+  </div>
+);
+
+const Step = ({ n, text }) => (
+  <div style={{display:'flex',gap:'10px',alignItems:'flex-start',marginBottom:'7px'}}>
+    <div style={{width:'18px',height:'18px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.3)',borderRadius:'2px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:'1px'}}>
+      <span style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,color:'#00e5c8'}}>{n}</span>
+    </div>
+    <p style={{color:'rgba(255,255,255,0.55)',fontSize:'11px',lineHeight:1.5}}>{text}</p>
+  </div>
+);
+
+const ModeCard = ({ icon, name, desc, accent, active }) => (
+  <div style={{
+    background: active ? `rgba(${accent},0.08)` : 'rgba(0,0,0,0.2)',
+    border: `1px solid rgba(${accent},${active?'0.35':'0.15'})`,
+    borderRadius:'3px', padding:'9px 11px', marginBottom:'6px',
+    transition:'all 0.2s'
+  }}>
+    <div style={{display:'flex',alignItems:'center',gap:'7px',marginBottom:'3px'}}>
+      <span style={{fontSize:'13px'}}>{icon}</span>
+      <span style={{fontFamily:"'Orbitron',monospace",fontSize:'10px',fontWeight:700,color:`rgb(${accent})`,letterSpacing:'0.05em'}}>{name}</span>
+    </div>
+    <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px',lineHeight:1.4}}>{desc}</p>
+  </div>
+);
+
 const LeftColumn = ({ playerName, kingBadge }) => {
   return (
-    <>
-      {/* Desktop Version */}
-      <div className="left-column hidden lg:block h-[calc(100vh-120px)] sticky top-6">
-        <div className="glass-card h-full backdrop-blur-2xl bg-[#111928]/75 rounded-2xl p-6 border border-white/10 overflow-y-auto custom-scrollbar">
-          <div className="flex items-center gap-2 mb-4 sticky top-0 bg-[#111928]/90 backdrop-blur-sm pt-2 pb-2 -mt-2 z-10">
-            <div className="icon-container w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400">❓</div>
-            <h2 className="text-white font-semibold text-lg">How to Play</h2>
-          </div>
-          
-          {/* Basic Rules */}
-          <div className="mb-4">
-            <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">Basic Rules</h3>
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="step-text text-purple-400 text-[10px] font-bold">1</span>
+    <div className="left-column" style={{
+      display: 'none', // Hidden by default on mobile
+      height: 'calc(100vh - 32px)',
+      position: 'sticky',
+      top: '16px'
+    }}>
+      {/* Add media query for desktop */}
+      <style>{`
+        @media (min-width: 800px) {
+          .left-column {
+            display: block !important;
+          }
+        }
+      `}</style>
+      
+      <div style={{
+        height:'100%', background:'#10131e', border:'1px solid rgba(255,255,255,0.06)',
+        borderRadius:'4px', display:'flex', flexDirection:'column', overflow:'hidden',
+        position:'relative'
+      }}>
+        <div style={{position:'absolute',top:0,left:'16px',right:'16px',height:'1px',background:'linear-gradient(90deg,transparent,rgba(0,229,200,0.4),transparent)'}} />
+        
+        {/* Header */}
+        <div style={{padding:'14px 16px',borderBottom:'1px solid rgba(255,255,255,0.06)',display:'flex',alignItems:'center',gap:'9px',background:'rgba(0,0,0,0.2)'}}>
+          <div style={{width:'26px',height:'26px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.2)',borderRadius:'3px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px'}}>❓</div>
+          <span style={{fontFamily:"'Orbitron',monospace",fontSize:'11px',fontWeight:700,letterSpacing:'0.12em',color:'#00e5c8',textTransform:'uppercase'}}>How to Play</span>
+        </div>
+
+        {/* Scrollable content */}
+        <div style={{flex:1,overflowY:'auto',padding:'16px',scrollbarWidth:'thin',scrollbarColor:'rgba(0,229,200,0.2) transparent'}}>
+          <Section label="Basic Rules">
+            <Step n="1" text="Watch the color sequence" />
+            <Step n="2" text="Repeat in the same order" />
+            <Step n="3" text="Each round adds one color" />
+            <Step n="4" text="Wrong click = game over" />
+          </Section>
+
+          <Section label="Game Modes">
+            <ModeCard icon="⚡" name="Quick Game" desc="Endless loop • Play until mistake" accent="59,130,246" />
+            <ModeCard icon="😎" name="Easy Mode" desc="5 songs • Win before song ends" accent="34,197,94" />
+            <ModeCard icon="😇" name="Hard Mode" desc="2 intense songs • Beat the music" accent="245,166,35" />
+            <ModeCard icon="👑" name="King Mode" desc="2 epic songs • Earn the crown badge" accent="255,95,87" />
+          </Section>
+
+          <Section label="Win Condition">
+            <div style={{background:'rgba(0,229,200,0.05)',border:'1px solid rgba(0,229,200,0.15)',borderRadius:'3px',padding:'10px 12px'}}>
+              <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px',marginBottom:'6px'}}>Easy / Hard / King modes:</p>
+              {['Complete all sequences','Song plays to the end','Zero mistakes'].map((t,i) => (
+                <div key={i} style={{display:'flex',gap:'7px',alignItems:'center',marginBottom:'4px'}}>
+                  <span style={{color:'#00e5c8',fontSize:'10px'}}>✓</span>
+                  <span style={{color:'rgba(255,255,255,0.5)',fontSize:'10px'}}>{t}</span>
                 </div>
-                <p className="text-white/70 text-xs">Watch the sequence</p>
+              ))}
+              <p style={{color:'rgba(255,255,255,0.25)',fontSize:'10px',marginTop:'6px'}}>Quick Game: endless, no win condition</p>
+            </div>
+          </Section>
+
+          <Section label="⏱ Timer">
+            <div style={{background:'rgba(245,166,35,0.06)',border:'1px solid rgba(245,166,35,0.2)',borderRadius:'3px',padding:'10px 12px'}}>
+              <div style={{display:'flex',gap:'7px',alignItems:'center',marginBottom:'5px'}}>
+                <span style={{color:'#f5a623',fontSize:'10px'}}>⏱</span>
+                <span style={{color:'rgba(255,255,255,0.5)',fontSize:'10px'}}>20s timer, resets on each click</span>
               </div>
-              <div className="flex gap-2">
-                <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="step-text text-purple-400 text-[10px] font-bold">2</span>
-                </div>
-                <p className="text-white/70 text-xs">Repeat in same order</p>
-              </div>
-              <div className="flex gap-2">
-                <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="step-text text-purple-400 text-[10px] font-bold">3</span>
-                </div>
-                <p className="text-white/70 text-xs">Each round adds one color</p>
-              </div>
-              <div className="flex gap-2">
-                <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="step-text text-purple-400 text-[10px] font-bold">4</span>
-                </div>
-                <p className="text-white/70 text-xs">Wrong click = game over</p>
+              <div style={{background:'rgba(255,95,87,0.1)',border:'1px solid rgba(255,95,87,0.2)',borderRadius:'2px',padding:'7px 9px',marginTop:'4px'}}>
+                <p style={{color:'#ff5f57',fontSize:'10px',fontFamily:"'Orbitron',monospace",letterSpacing:'0.05em',marginBottom:'4px'}}>⚠ WARNING</p>
+                <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px'}}>Timeout → warning modal</p>
+                <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px'}}>2nd timeout → game quits</p>
               </div>
             </div>
+          </Section>
+        </div>
+
+        {/* Player footer */}
+        <div style={{padding:'12px 16px',borderTop:'1px solid rgba(255,255,255,0.06)',background:'rgba(0,0,0,0.3)',display:'flex',alignItems:'center',gap:'10px'}}>
+          <div style={{
+            width:'32px',height:'32px',borderRadius:'50%',
+            background:'linear-gradient(135deg,rgba(0,229,200,0.2),rgba(59,130,246,0.2))',
+            border:'1px solid rgba(0,229,200,0.3)',
+            display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0
+          }}>
+            <span style={{fontFamily:"'Orbitron',monospace",fontWeight:700,fontSize:'13px',color:'#00e5c8'}}>
+              {playerName.charAt(0).toUpperCase()}
+            </span>
           </div>
-
-          {/* Game Modes - Compact */}
-          <div className="mb-4">
-            <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">Game Modes</h3>
-            <div className="space-y-2">
-              {/* Quick Game */}
-              <div className="bg-blue-500/10 rounded-lg p-2 border border-blue-400/30">
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-base">⚡</span>
-                  <span className="text-white font-semibold text-xs">Quick Game</span>
-                </div>
-                <p className="text-white/60 text-[10px] leading-relaxed">
-                  Endless looping music. Play until mistake.
-                </p>
-              </div>
-
-              {/* Easy Mode */}
-              <div className="bg-green-500/10 rounded-lg p-2 border border-green-400/30">
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-base">😎</span>
-                  <span className="text-white font-semibold text-xs">Easy Mode</span>
-                </div>
-                <p className="text-white/60 text-[10px] leading-relaxed">
-                  5 songs • Win by completing sequence before song ends
-                </p>
-              </div>
-
-              {/* Hard Mode */}
-              <div className="bg-orange-500/10 rounded-lg p-2 border border-orange-400/30">
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-base">😇</span>
-                  <span className="text-white font-semibold text-xs">Hard Mode</span>
-                </div>
-                <p className="text-white/60 text-[10px] leading-relaxed">
-                  2 intense songs • Beat sequence before music stops
-                </p>
-              </div>
-
-              {/* King Mode */}
-              <div className="bg-yellow-500/10 rounded-lg p-2 border border-yellow-400/30">
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-base">👑</span>
-                  <span className="text-white font-semibold text-xs">King Mode</span>
-                </div>
-                <p className="text-white/60 text-[10px] leading-relaxed">
-                  2 epic songs • Win to earn 👑 King Badge
-                </p>
-                {kingBadge && (
-                  <div className="mt-1 text-yellow-400 text-[10px] flex items-center gap-1">
-                    <span>👑</span>
-                    <span>You are a King!</span>
-                  </div>
-                )}
-              </div>
+          <div style={{minWidth:0,flex:1}}>
+            <p style={{color:'rgba(255,255,255,0.25)',fontSize:'9px',letterSpacing:'0.15em',textTransform:'uppercase'}}>Active Player</p>
+            <div style={{display:'flex',alignItems:'center',gap:'5px'}}>
+              <p style={{color:'rgba(255,255,255,0.8)',fontSize:'12px',fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'90px'}}>{playerName}</p>
+              {kingBadge && <span style={{color:'#f5a623',fontSize:'12px'}}>👑</span>}
             </div>
-          </div>
-
-          {/* How to Win - Compact */}
-          <div className="mb-4">
-            <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">How to Win</h3>
-            <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-2 border border-purple-400/30">
-              <p className="text-white/70 text-[10px] mb-1">Easy/Hard/King modes:</p>
-              <ul className="space-y-1 text-white/60 text-[10px]">
-                <li className="flex items-start gap-1">
-                  <span className="text-green-400">✓</span>
-                  <span>Complete all sequences</span>
-                </li>
-                <li className="flex items-start gap-1">
-                  <span className="text-green-400">✓</span>
-                  <span>Song plays to the end</span>
-                </li>
-                <li className="flex items-start gap-1">
-                  <span className="text-green-400">✓</span>
-                  <span>No mistakes</span>
-                </li>
-              </ul>
-              <p className="text-white/60 text-[10px] mt-1">
-                Quick Game: No win condition - endless!
-              </p>
-            </div>
-          </div>
-
-          {/* Timer System - Compact */}
-          <div className="mb-4">
-            <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">⏱️ Timer</h3>
-            <div className="bg-yellow-500/10 rounded-lg p-2 border border-yellow-400/30">
-              <ul className="space-y-1 text-white/60 text-[10px] mb-2">
-                <li className="flex items-start gap-1">
-                  <span className="text-yellow-400">⏱️</span>
-                  <span>20s timer, resets on click</span>
-                </li>
-                <li className="flex items-start gap-1">
-                  <span className="text-yellow-400">⏱️</span>
-                  <span>Timeout = 1 warning</span>
-                </li>
-              </ul>
-              
-              <div className="p-1.5 bg-orange-500/20 rounded-lg border border-orange-400/30">
-                <p className="text-orange-300 text-[10px] font-semibold mb-1">⚠️ Warning:</p>
-                <ul className="space-y-1 text-white/60 text-[10px]">
-                  <li className="flex items-start gap-1">
-                    <span className="text-orange-400">1</span>
-                    <span>Warning modal appears</span>
-                  </li>
-                  <li className="flex items-start gap-1">
-                    <span className="text-orange-400">2</span>
-                    <span>Game quits, no score saved</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Player Info - Sticky at bottom */}
-          <div className="sticky bottom-0 bg-[#111928]/90 backdrop-blur-sm pt-3 pb-1 -mb-2 border-t border-white/10">
-            <div className="flex items-center gap-2">
-              <div className="player-avatar w-8 h-8 rounded-full bg-gradient-to-r from-blue-500/30 to-purple-500/30 flex items-center justify-center border border-white/30">
-                <span className="text-white font-bold text-sm">{playerName.charAt(0).toUpperCase()}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-white/50 text-[10px]">Current Player</p>
-                <div className="flex items-center gap-1 flex-wrap">
-                  <p className="text-white font-semibold text-xs truncate max-w-[100px]">{playerName}</p>
-                  {kingBadge && (
-                    <>
-                      <span className="text-yellow-400 text-xs">👑</span>
-                      <span className="text-yellow-400 text-[8px]">King</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-            <p className="text-white/30 text-[8px] text-center mt-2">
-              💡 Watch the timer!
-            </p>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

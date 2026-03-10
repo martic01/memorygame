@@ -1,145 +1,177 @@
 import React from 'react';
 import { modeMusic } from '../constants/modeMusic';
 
+const ModalWrapper = ({ children }) => (
+  <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',zIndex:70,padding:'16px'}}>
+    <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.85)',backdropFilter:'blur(6px)'}} />
+    <div className="animate-slideIn" style={{position:'relative',width:'100%',maxWidth:'400px'}}>
+      {children}
+    </div>
+  </div>
+);
+
+const modalBase = {
+  background:'#0d0f18', borderRadius:'4px', padding:'36px 32px',
+  fontFamily:"'Share Tech Mono', monospace", position:'relative', overflow:'hidden'
+};
+
+const Btn = ({ onClick, accent, children }) => {
+  const colors = {
+    teal: { bg:'rgba(0,229,200,0.08)', border:'rgba(0,229,200,0.4)', color:'#00e5c8', hover:'rgba(0,229,200,0.15)' },
+    red:  { bg:'rgba(255,95,87,0.08)',  border:'rgba(255,95,87,0.4)',  color:'#ff5f57', hover:'rgba(255,95,87,0.15)' },
+    amber:{ bg:'rgba(245,166,35,0.08)', border:'rgba(245,166,35,0.4)', color:'#f5a623', hover:'rgba(245,166,35,0.15)' },
+    gray: { bg:'rgba(160,160,160,0.08)', border:'rgba(160,160,160,0.4)', color:'#a0a0a0', hover:'rgba(160,160,160,0.15)' },
+  }[accent] || {};
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width:'100%', padding:'12px', background:colors.bg, border:`1px solid ${colors.border}`,
+        borderRadius:'3px', color:colors.color, fontFamily:"'Orbitron',monospace",
+        fontSize:'11px', fontWeight:700, letterSpacing:'0.12em', cursor:'pointer',
+        textTransform:'uppercase', transition:'all 0.2s'
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background=colors.hover; e.currentTarget.style.boxShadow=`0 0 20px ${colors.border}`; }}
+      onMouseLeave={e => { e.currentTarget.style.background=colors.bg; e.currentTarget.style.boxShadow='none'; }}
+    >{children}</button>
+  );
+};
+
 export const WarningModal = ({ show, onContinue, onQuit }) => {
   if (!show) return null;
-
   return (
-    <div className="warning-modal fixed inset-0 flex items-center justify-center z-[70] p-4">
-      <div className="warning-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-      <div className="warning-content relative bg-orange-500/20 backdrop-blur-2xl rounded-2xl p-8 max-w-md w-full border-2 border-orange-400/50 animate-slideIn">
-        <div className="text-center">
-          <div className="warning-icon w-20 h-20 mx-auto mb-4 bg-orange-500/30 rounded-full flex items-center justify-center border-2 border-orange-400 text-4xl">
-            ⚠️
-          </div>
-          <h2 className="text-3xl font-bold text-orange-300 mb-4">Warning!</h2>
-          <p className="text-white/90 text-lg mb-6">
-            You are trying to trick me! This is your last warning. Play or quit!
+    <ModalWrapper>
+      <div style={{...modalBase, border:'1px solid rgba(245,166,35,0.4)', boxShadow:'0 0 60px rgba(245,166,35,0.1)'}}>
+        <div style={{position:'absolute',top:0,left:'20px',right:'20px',height:'1px',background:'linear-gradient(90deg,transparent,#f5a623,transparent)'}} />
+        <div style={{textAlign:'center'}}>
+          <div style={{width:'64px',height:'64px',margin:'0 auto 20px',background:'rgba(245,166,35,0.1)',border:'1px solid rgba(245,166,35,0.4)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'28px'}}>⚠️</div>
+          <h2 style={{fontFamily:"'Orbitron',monospace",fontSize:'20px',fontWeight:900,color:'#f5a623',letterSpacing:'0.1em',marginBottom:'10px'}}>WARNING</h2>
+          <p style={{color:'rgba(255,255,255,0.6)',fontSize:'12px',lineHeight:1.7,marginBottom:'24px'}}>
+            Idle timeout detected. This is your last warning.<br/>Play or the session will be terminated.
           </p>
-
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={onContinue}
-              className="warning-button w-full px-6 py-3 bg-gradient-to-r from-green-500/30 to-emerald-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition text-lg"
-            >
-              Continue Playing
-            </button>
-
-            <button
-              onClick={onQuit}
-              className="warning-button w-full px-6 py-3 bg-gradient-to-r from-red-500/30 to-orange-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition text-lg"
-            >
-              Quit Match
-            </button>
+          <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+            <Btn onClick={onContinue} accent="teal">▶ Continue Playing</Btn>
+            <Btn onClick={onQuit} accent="red">✕ Quit Match</Btn>
           </div>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
   );
 };
 
 export const VictoryModal = ({ show, selectedMode, score, onPlayAgain }) => {
   if (!show) return null;
-
+  const isKing = selectedMode === 'king';
   return (
-    <div className="victory-modal fixed inset-0 flex items-center justify-center z-[70] p-4">
-      <div className="victory-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-      <div className={`victory-content relative backdrop-blur-2xl rounded-2xl p-8 max-w-md w-full border-4 animate-slideIn ${
-        selectedMode === 'king' ? 'border-yellow-400 shadow-[0_0_50px_rgba(255,215,0,0.8)]' : 'border-green-400'
-      }`}>
-        <div className="text-center">
-          <div className="victory-icon w-24 h-24 mx-auto mb-4 bg-gradient-to-r from-yellow-500/30 to-purple-500/30 rounded-full flex items-center justify-center border-4 border-yellow-400 text-5xl">
-            {selectedMode === 'king' ? '👑' : '🏆'}
-          </div>
-          <h2 className="text-4xl font-bold text-yellow-300 mb-2">VICTORY!</h2>
-          <p className="text-white/80 text-xl mb-2">You conquered {modeMusic[selectedMode].name}!</p>
-          {selectedMode === 'king' && (
-            <p className="text-yellow-400 font-bold text-lg mb-2">You are now a KING! 👑</p>
-          )}
-          <p className="text-white/70 text-lg mb-4">
-            Score: <span className="text-yellow-400 font-bold text-2xl">{score}</span> colors
+    <ModalWrapper>
+      <div style={{...modalBase, border:`2px solid ${isKing?'#f5a623':'#00e5c8'}`, boxShadow:`0 0 80px ${isKing?'rgba(245,166,35,0.2)':'rgba(0,229,200,0.15)'}`}}>
+        <div style={{position:'absolute',top:0,left:'20px',right:'20px',height:'2px',background:`linear-gradient(90deg,transparent,${isKing?'#f5a623':'#00e5c8'},transparent)`}} />
+        <div style={{textAlign:'center'}}>
+          <div style={{fontSize:'48px',marginBottom:'12px'}}>{isKing ? '👑' : '🏆'}</div>
+          <h2 style={{fontFamily:"'Orbitron',monospace",fontSize:'24px',fontWeight:900,color:isKing?'#f5a623':'#00e5c8',letterSpacing:'0.1em',marginBottom:'6px'}}>VICTORY</h2>
+          <p style={{color:'rgba(255,255,255,0.5)',fontSize:'11px',letterSpacing:'0.1em',marginBottom:'4px',textTransform:'uppercase'}}>
+            {modeMusic[selectedMode]?.name} cleared
           </p>
-
-          <button
-            onClick={onPlayAgain}
-            className="victory-button w-full px-6 py-3 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition text-lg"
-          >
-            Play Again
-          </button>
+          {isKing && <p style={{color:'#f5a623',fontSize:'12px',fontFamily:"'Orbitron',monospace",marginBottom:'4px'}}>KING STATUS UNLOCKED 👑</p>}
+          <div style={{
+            display:'inline-flex',alignItems:'center',gap:'8px',
+            padding:'10px 20px',background:'rgba(0,229,200,0.06)',
+            border:'1px solid rgba(0,229,200,0.2)',borderRadius:'3px',margin:'16px 0 24px'
+          }}>
+            <span style={{color:'rgba(255,255,255,0.4)',fontSize:'11px'}}>SCORE</span>
+            <span style={{fontFamily:"'Orbitron',monospace",fontWeight:900,fontSize:'28px',color:'#00e5c8'}}>{score}</span>
+            <span style={{color:'rgba(255,255,255,0.3)',fontSize:'11px'}}>colors</span>
+          </div>
+          <Btn onClick={onPlayAgain} accent={isKing?'amber':'teal'}>▶ Play Again</Btn>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
+  );
+};
+
+export const FailureModal = ({ show, selectedMode, score, onPlayAgain }) => {
+  if (!show) return null;
+  return (
+    <ModalWrapper>
+      <div style={{...modalBase, border:'1px solid rgba(160,160,160,0.4)', boxShadow:'0 0 60px rgba(160,160,160,0.1)'}}>
+        <div style={{position:'absolute',top:0,left:'20px',right:'20px',height:'1px',background:'linear-gradient(90deg,transparent,#a0a0a0,transparent)'}} />
+        <div style={{textAlign:'center'}}>
+          <div style={{width:'64px',height:'64px',margin:'0 auto 20px',background:'rgba(160,160,160,0.1)',border:'1px solid rgba(160,160,160,0.4)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'28px'}}>⚠️</div>
+          <h2 style={{fontFamily:"'Orbitron',monospace",fontSize:'20px',fontWeight:900,color:'#a0a0a0',letterSpacing:'0.1em',marginBottom:'10px'}}>FAILED</h2>
+          <p style={{color:'rgba(255,255,255,0.6)',fontSize:'12px',lineHeight:1.7,marginBottom:'8px'}}>
+            {modeMusic[selectedMode]?.name} not cleared
+          </p>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:'11px',marginBottom:'16px'}}>
+            Score too low to win this mode
+          </p>
+          <div style={{
+            display:'inline-flex',alignItems:'center',gap:'8px',
+            padding:'10px 20px',background:'rgba(160,160,160,0.06)',
+            border:'1px solid rgba(160,160,160,0.2)',borderRadius:'3px',margin:'8px 0 24px'
+          }}>
+            <span style={{color:'rgba(255,255,255,0.4)',fontSize:'11px'}}>SCORE</span>
+            <span style={{fontFamily:"'Orbitron',monospace",fontWeight:900,fontSize:'28px',color:'#a0a0a0'}}>{score}</span>
+            <span style={{color:'rgba(255,255,255,0.3)',fontSize:'11px'}}>colors</span>
+          </div>
+          <Btn onClick={onPlayAgain} accent="gray">▶ Try Again</Btn>
+        </div>
+      </div>
+    </ModalWrapper>
   );
 };
 
 export const ResumeModal = ({ show, playerName, score, onContinue, onRestart }) => {
   if (!show) return null;
-
   return (
-    <div className="resume-prompt-overlay fixed inset-0 flex items-center justify-center z-[60] p-4">
-      <div className="resume-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-      <div className="resume-content relative bg-white/10 backdrop-blur-2xl rounded-2xl p-8 max-w-md w-full border border-white/30 animate-slideIn">
-        <div className="text-center">
-          <div className="resume-icon w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full flex items-center justify-center border-2 border-white/50 text-4xl">
-            🎮
+    <ModalWrapper>
+      <div style={{...modalBase, border:'1px solid rgba(59,130,246,0.3)', boxShadow:'0 0 60px rgba(59,130,246,0.08)'}}>
+        <div style={{position:'absolute',top:0,left:'20px',right:'20px',height:'1px',background:'linear-gradient(90deg,transparent,#3b82f6,transparent)'}} />
+        <div style={{textAlign:'center'}}>
+          <div style={{fontSize:'36px',marginBottom:'14px'}}>🎮</div>
+          <h2 style={{fontFamily:"'Orbitron',monospace",fontSize:'18px',fontWeight:900,color:'rgba(255,255,255,0.9)',letterSpacing:'0.1em',marginBottom:'6px'}}>WELCOME BACK</h2>
+          <p style={{color:'rgba(255,255,255,0.5)',fontSize:'13px',marginBottom:'4px'}}>{playerName}</p>
+          <p style={{color:'rgba(255,255,255,0.3)',fontSize:'11px',marginBottom:'8px'}}>Previous session saved</p>
+          <div style={{
+            display:'inline-flex',alignItems:'center',gap:'8px',
+            padding:'8px 18px',background:'rgba(59,130,246,0.08)',
+            border:'1px solid rgba(59,130,246,0.2)',borderRadius:'3px',marginBottom:'24px'
+          }}>
+            <span style={{fontFamily:"'Orbitron',monospace",fontWeight:900,fontSize:'24px',color:'#3b82f6'}}>{score}</span>
+            <span style={{color:'rgba(255,255,255,0.3)',fontSize:'11px'}}>colors remembered</span>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Welcome Back!</h2>
-          <p className="text-white/70 text-lg mb-2">{playerName}</p>
-          <p className="text-white/50 text-sm mb-6">
-            You had a score of <span className="text-yellow-400 font-bold text-xl">{score}</span> colors remembered
-          </p>
-
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={onContinue}
-              className="resume-button w-full px-6 py-3 bg-gradient-to-r from-green-500/30 to-emerald-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition text-lg"
-            >
-              Continue Game
-            </button>
-
-            <button
-              onClick={onRestart}
-              className="restart-button w-full px-6 py-3 bg-gradient-to-r from-red-500/30 to-orange-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition text-lg"
-            >
-              Start New Game
-            </button>
+          <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+            <Btn onClick={onContinue} accent="teal">▶ Continue Session</Btn>
+            <Btn onClick={onRestart} accent="red">↺ New Game</Btn>
           </div>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
   );
 };
 
 export const GameOverModal = ({ show, score, onPlayAgain, onNewPlayer }) => {
   if (!show) return null;
-
   return (
-    <div className="modal-overlay fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div className="modal-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-      <div className="modal-content relative bg-white/10 backdrop-blur-2xl rounded-2xl p-6 max-w-sm w-full border border-white/30 animate-slideIn">
-        <div className="text-center">
-          <div className="modal-icon w-16 h-16 mx-auto mb-3 bg-red-500/30 rounded-full flex items-center justify-center border-2 border-red-400/50 text-red-300 text-2xl">✕</div>
-          <h2 className="modal-title text-2xl font-bold text-white mb-1">Game Over</h2>
-          <p className="modal-score text-3xl font-bold text-white mb-2">{score}</p>
-          <p className="modal-score-label text-white/70 text-sm mb-4">colors remembered</p>
-
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={onPlayAgain}
-              className="modal-button w-full px-5 py-2 bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition"
-            >
-              Play Again
-            </button>
-
-            <button
-              onClick={onNewPlayer}
-              className="modal-button w-full px-5 py-2 bg-gradient-to-r from-green-500/30 to-teal-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition"
-            >
-              New Player
-            </button>
+    <ModalWrapper>
+      <div style={{...modalBase, border:'1px solid rgba(255,95,87,0.3)', boxShadow:'0 0 60px rgba(255,95,87,0.08)'}}>
+        <div style={{position:'absolute',top:0,left:'20px',right:'20px',height:'1px',background:'linear-gradient(90deg,transparent,#ff5f57,transparent)'}} />
+        <div style={{textAlign:'center'}}>
+          <div style={{width:'60px',height:'60px',margin:'0 auto 16px',background:'rgba(255,95,87,0.1)',border:'1px solid rgba(255,95,87,0.3)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'24px'}}>✕</div>
+          <h2 style={{fontFamily:"'Orbitron',monospace",fontSize:'22px',fontWeight:900,color:'#ff5f57',letterSpacing:'0.12em',marginBottom:'10px'}}>GAME OVER</h2>
+          <div style={{
+            display:'inline-flex',alignItems:'center',gap:'8px',
+            padding:'10px 20px',background:'rgba(255,255,255,0.04)',
+            border:'1px solid rgba(255,255,255,0.1)',borderRadius:'3px',marginBottom:'24px'
+          }}>
+            <span style={{fontFamily:"'Orbitron',monospace",fontWeight:900,fontSize:'32px',color:'rgba(255,255,255,0.9)'}}>{score}</span>
+            <span style={{color:'rgba(255,255,255,0.3)',fontSize:'11px'}}>colors remembered</span>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+            <Btn onClick={onPlayAgain} accent="teal">▶ Try Again</Btn>
+            <Btn onClick={onNewPlayer} accent="amber">◈ New Player</Btn>
           </div>
         </div>
       </div>
-    </div>
+    </ModalWrapper>
   );
 };

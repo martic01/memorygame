@@ -1,246 +1,169 @@
 import React from 'react';
 
-const MobileFloatingButtons = ({ 
-  showLeftOverlay, 
-  showRightOverlay, 
-  setShowLeftOverlay, 
-  setShowRightOverlay, 
-  toggleMute, 
-  isMuted,
-  closeOverlays,
-  kingBadge,
-  players,
-  getRankStyle,
-  getRankIcon
+const MobileFloatingButtons = ({
+  showLeftOverlay, showRightOverlay,
+  setShowLeftOverlay, setShowRightOverlay,
+  toggleMute, isMuted, closeOverlays,
+  kingBadge, players, getRankStyle, getRankIcon
 }) => {
+  const rankColors = {
+    'rank-first': { border:'rgba(245,166,35,0.4)', bg:'rgba(245,166,35,0.06)' },
+    'rank-second': { border:'rgba(180,180,180,0.3)', bg:'rgba(180,180,180,0.04)' },
+    'rank-third': { border:'rgba(180,120,80,0.3)', bg:'rgba(180,120,80,0.05)' },
+  };
+
+  const floatBtnStyle = {
+    width:'44px', height:'44px', borderRadius:'50%',
+    background:'rgba(13,15,24,0.9)', backdropFilter:'blur(12px)',
+    border:'1px solid rgba(255,255,255,0.12)',
+    display:'flex', alignItems:'center', justifyContent:'center',
+    fontSize:'18px', cursor:'pointer', transition:'all 0.2s',
+    boxShadow:'0 4px 20px rgba(0,0,0,0.4)'
+  };
+
+  const overlayStyle = (show, side) => ({
+    position:'fixed', top:0, [side]:0,
+    width:'82%', maxWidth:'320px', height:'100vh',
+    zIndex:50, transition:'transform 0.3s ease',
+    transform: show ? 'translateX(0)' : side === 'left' ? 'translateX(-100%)' : 'translateX(100%)',
+    background:'#0d0f18', borderRight: side === 'left' ? '1px solid rgba(255,255,255,0.08)' : 'none',
+    borderLeft: side === 'right' ? '1px solid rgba(255,255,255,0.08)' : 'none',
+    display:'flex', flexDirection:'column', fontFamily:"'Share Tech Mono',monospace"
+  });
+
   return (
     <>
-      <div className="lg:hidden fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-30">
-        <button
-          onClick={() => setShowLeftOverlay(true)}
-          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl shadow-lg hover:bg-white/20 transition"
-          title="How to Play"
-        >
-          ❓
-        </button>
-        <button
-          onClick={() => setShowRightOverlay(true)}
-          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl shadow-lg hover:bg-white/20 transition"
-          title="Leaderboard"
-        >
-          🏆
-        </button>
-        <button
-          onClick={toggleMute}
-          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl shadow-lg hover:bg-white/20 transition"
-          title={isMuted ? "Unmute" : "Mute"}
-        >
-          {isMuted ? '🔇' : '🔊'}
-        </button>
+      {/* FABs */}
+      <div className='gamer' style={{position:'fixed',right:'12px',top:'50%',transform:'translateY(-50%)',display:'flex',flexDirection:'column',gap:'10px',zIndex:30}}>
+         <style>{`
+      @media (min-width: 800px) {
+        .gamer {
+         display:none !important;
+        }
+      }
+    `}</style>
+        {[
+          { icon:'❓', onClick: () => setShowLeftOverlay(true) },
+          { icon:'🏆', onClick: () => setShowRightOverlay(true) },
+          { icon: isMuted ? '🔇' : '🔊', onClick: toggleMute },
+        ].map((btn, i) => (
+          <button key={i} onClick={btn.onClick} style={floatBtnStyle}
+            onMouseEnter={e => e.currentTarget.style.borderColor='rgba(0,229,200,0.4)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'}
+          >{btn.icon}</button>
+        ))}
       </div>
 
-      {/* Mobile Overlay - How to Play */}
-      <div className={`mobile-overlay fixed top-0 w-[85%] max-w-sm h-screen z-50 transition-transform duration-300 p-4 ${showLeftOverlay ? 'active translate-x-0' : '-translate-x-full'} left-0`}>
-        <div className="overlay-header flex justify-end mb-4">
-          <button onClick={closeOverlays} className="close-overlay p-2 bg-white/10 rounded-full border border-white/10 text-white">✕</button>
+      {/* HOW TO PLAY overlay */}
+      <div className="lg:hidden" style={overlayStyle(showLeftOverlay, 'left')}>
+        <div style={{padding:'14px 16px',borderBottom:'1px solid rgba(255,255,255,0.07)',display:'flex',alignItems:'center',justifyContent:'space-between',background:'rgba(0,0,0,0.3)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'9px'}}>
+            <span style={{fontSize:'14px'}}>❓</span>
+            <span style={{fontFamily:"'Orbitron',monospace",fontSize:'11px',fontWeight:700,letterSpacing:'0.12em',color:'#00e5c8'}}>HOW TO PLAY</span>
+          </div>
+          <button onClick={closeOverlays} style={{padding:'5px 9px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'2px',color:'rgba(255,255,255,0.6)',cursor:'pointer',fontSize:'11px'}}>✕</button>
         </div>
-        <div className="glass-card h-full backdrop-blur-2xl bg-[#111928]/75 rounded-2xl p-6 border border-white/10 overflow-y-auto custom-scrollbar">
-          <div className="flex items-center gap-2 mb-4 sticky top-0 bg-[#111928]/90 backdrop-blur-sm pt-2 pb-2 -mt-2 z-10">
-            <div className="icon-container w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400">❓</div>
-            <h2 className="text-white font-semibold text-lg">How to Play</h2>
+        <div style={{flex:1,overflowY:'auto',padding:'16px',scrollbarWidth:'thin'}}>
+          {/* Rules */}
+          <div style={{marginBottom:'18px'}}>
+            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>Basic Rules</div>
+            {['Watch the color sequence','Repeat in the same order','Each round adds one color','Wrong click = game over'].map((t,i) => (
+              <div key={i} style={{display:'flex',gap:'9px',alignItems:'flex-start',marginBottom:'7px'}}>
+                <div style={{width:'18px',height:'18px',background:'rgba(0,229,200,0.1)',border:'1px solid rgba(0,229,200,0.3)',borderRadius:'2px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <span style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,color:'#00e5c8'}}>{i+1}</span>
+                </div>
+                <p style={{color:'rgba(255,255,255,0.55)',fontSize:'11px',lineHeight:1.5}}>{t}</p>
+              </div>
+            ))}
           </div>
-          
-          <div className="space-y-4 pb-4">
-            {/* Basic Rules */}
-            <div>
-              <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">Basic Rules</h3>
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="step-text text-purple-400 text-[10px] font-bold">1</span>
-                  </div>
-                  <p className="text-white/70 text-xs">Watch the sequence of colors</p>
+          {/* Modes */}
+          <div style={{marginBottom:'18px'}}>
+            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>Game Modes</div>
+            {[
+              {icon:'⚡',name:'Quick Game',desc:'Endless loop · Play until mistake',accent:'59,130,246'},
+              {icon:'😎',name:'Easy Mode',desc:'5 songs · Win before song ends',accent:'34,197,94'},
+              {icon:'😇',name:'Hard Mode',desc:'2 songs · Beat the music',accent:'245,166,35'},
+              {icon:'👑',name:'King Mode',desc:'2 songs · Earn the crown badge',accent:'255,95,87'},
+            ].map((m,i) => (
+              <div key={i} style={{background:`rgba(${m.accent},0.06)`,border:`1px solid rgba(${m.accent},0.2)`,borderRadius:'3px',padding:'9px 11px',marginBottom:'6px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'7px',marginBottom:'3px'}}>
+                  <span style={{fontSize:'13px'}}>{m.icon}</span>
+                  <span style={{fontFamily:"'Orbitron',monospace",fontSize:'10px',fontWeight:700,color:`rgb(${m.accent})`,letterSpacing:'0.05em'}}>{m.name}</span>
                 </div>
-                <div className="flex gap-2">
-                  <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="step-text text-purple-400 text-[10px] font-bold">2</span>
-                  </div>
-                  <p className="text-white/70 text-xs">Click previously blinked colors + new one</p>
-                </div>
-                <div className="flex gap-2">
-                  <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="step-text text-purple-400 text-[10px] font-bold">3</span>
-                  </div>
-                  <p className="text-white/70 text-xs">Each correct round adds one color</p>
-                </div>
-                <div className="flex gap-2">
-                  <div className="step-number w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="step-text text-purple-400 text-[10px] font-bold">4</span>
-                  </div>
-                  <p className="text-white/70 text-xs">Wrong click = game over!</p>
-                </div>
+                <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px'}}>{m.desc}</p>
               </div>
-            </div>
-
-            {/* Game Modes */}
-            <div>
-              <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">Game Modes</h3>
-              <div className="space-y-2">
-                {/* Quick Game */}
-                <div className="bg-blue-500/10 rounded-lg p-2 border border-blue-400/30">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-base">⚡</span>
-                    <span className="text-white font-semibold text-xs">Quick Game</span>
-                  </div>
-                  <p className="text-white/60 text-[10px]">Endless looping • Play until mistake</p>
-                </div>
-
-                {/* Easy Mode */}
-                <div className="bg-green-500/10 rounded-lg p-2 border border-green-400/30">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-base">😎</span>
-                    <span className="text-white font-semibold text-xs">Easy Mode</span>
-                  </div>
-                  <p className="text-white/60 text-[10px]">5 songs • Win before song ends</p>
-                </div>
-
-                {/* Hard Mode */}
-                <div className="bg-orange-500/10 rounded-lg p-2 border border-orange-400/30">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-base">😇</span>
-                    <span className="text-white font-semibold text-xs">Hard Mode</span>
-                  </div>
-                  <p className="text-white/60 text-[10px]">2 intense songs • Beat the music</p>
-                </div>
-
-                {/* King Mode */}
-                <div className="bg-yellow-500/10 rounded-lg p-2 border border-yellow-400/30">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-base">👑</span>
-                    <span className="text-white font-semibold text-xs">King Mode</span>
-                  </div>
-                  <p className="text-white/60 text-[10px]">2 epic songs • Win to earn 👑 badge</p>
-                </div>
-              </div>
-            </div>
-
-            {/* How to Win */}
-            <div>
-              <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">How to Win</h3>
-              <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-2 border border-purple-400/30">
-                <p className="text-white/70 text-[10px] mb-1">Easy/Hard/King modes:</p>
-                <ul className="space-y-1 text-white/60 text-[10px]">
-                  <li className="flex items-start gap-1">
-                    <span className="text-green-400">✓</span>
-                    <span>Complete all sequences</span>
-                  </li>
-                  <li className="flex items-start gap-1">
-                    <span className="text-green-400">✓</span>
-                    <span>Song plays to the end</span>
-                  </li>
-                  <li className="flex items-start gap-1">
-                    <span className="text-green-400">✓</span>
-                    <span>No mistakes</span>
-                  </li>
-                </ul>
-                <p className="text-white/60 text-[10px] mt-1">Quick Game: No win condition</p>
-              </div>
-            </div>
-
-            {/* Timer System */}
-            <div>
-              <h3 className="text-white/80 text-xs font-semibold mb-2 uppercase tracking-wider">⏱️ Timer</h3>
-              <div className="bg-yellow-500/10 rounded-lg p-2 border border-yellow-400/30">
-                <ul className="space-y-1 text-white/60 text-[10px] mb-2">
-                  <li className="flex items-start gap-1">
-                    <span className="text-yellow-400">⏱️</span>
-                    <span>20s timer, resets on click</span>
-                  </li>
-                  <li className="flex items-start gap-1">
-                    <span className="text-yellow-400">⏱️</span>
-                    <span>Timeout = 1 warning</span>
-                  </li>
-                </ul>
-                <div className="p-1.5 bg-orange-500/20 rounded-lg border border-orange-400/30">
-                  <p className="text-orange-300 text-[10px] font-semibold mb-1">⚠️ Warning:</p>
-                  <ul className="space-y-1 text-white/60 text-[10px]">
-                    <li className="flex items-start gap-1">
-                      <span className="text-orange-400">1st</span>
-                      <span>Warning modal appears</span>
-                    </li>
-                    <li className="flex items-start gap-1">
-                      <span className="text-orange-400">2nd</span>
-                      <span>Game quits, no score</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* King Badge (conditional) */}
-            {kingBadge && (
-              <div className="bg-yellow-500/10 rounded-lg p-2 border border-yellow-400/30 text-center">
-                <span className="text-yellow-400 text-sm">👑</span>
-                <span className="text-yellow-400 text-xs ml-1">You are a King!</span>
-              </div>
-            )}
-
-            {/* Tip */}
-            <p className="text-white/30 text-[8px] text-center py-2">
-              💡 Tip: Watch the timer!
-            </p>
+            ))}
           </div>
+          {/* Timer */}
+          <div>
+            <div style={{fontFamily:"'Orbitron',monospace",fontSize:'9px',fontWeight:700,letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',textTransform:'uppercase',marginBottom:'8px'}}>Timer</div>
+            <div style={{background:'rgba(245,166,35,0.06)',border:'1px solid rgba(245,166,35,0.2)',borderRadius:'3px',padding:'10px 12px'}}>
+              <p style={{color:'rgba(255,255,255,0.5)',fontSize:'10px',marginBottom:'6px'}}>⏱ 20s timer, resets on each click</p>
+              <div style={{background:'rgba(255,95,87,0.08)',border:'1px solid rgba(255,95,87,0.2)',borderRadius:'2px',padding:'7px 9px'}}>
+                <p style={{color:'#ff5f57',fontSize:'10px',fontFamily:"'Orbitron',monospace",marginBottom:'4px'}}>⚠ WARNING</p>
+                <p style={{color:'rgba(255,255,255,0.4)',fontSize:'10px'}}>Timeout → warning modal<br/>2nd timeout → game quits</p>
+              </div>
+            </div>
+          </div>
+          {kingBadge && (
+            <div style={{marginTop:'14px',background:'rgba(245,166,35,0.08)',border:'1px solid rgba(245,166,35,0.3)',borderRadius:'3px',padding:'10px',textAlign:'center'}}>
+              <span style={{color:'#f5a623',fontSize:'12px',fontFamily:"'Orbitron',monospace"}}>👑 KING STATUS ACTIVE</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Mobile Overlay - Leaderboard */}
-      <div className={`mobile-overlay fixed top-0 w-[85%] max-w-sm h-screen z-50 transition-transform duration-300 p-4 ${showRightOverlay ? 'active translate-x-0' : 'translate-x-full'} right-0`}>
-        <div className="overlay-header flex justify-end mb-4">
-          <button onClick={closeOverlays} className="close-overlay p-2 bg-white/10 rounded-full border border-white/10 text-white">✕</button>
-        </div>
-        <div className="glass-card h-full backdrop-blur-2xl bg-[#111928]/75 rounded-2xl p-6 border border-white/10 flex flex-col overflow-y-auto">
-          <div className="flex items-center justify-between mb-4 sticky top-0 bg-[#111928]/90 backdrop-blur-sm pt-2 pb-2 -mt-2 z-10">
-            <div className="flex items-center gap-2">
-              <div className="icon-container w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center text-yellow-400">🏆</div>
-              <h2 className="text-white font-semibold text-lg">Leaderboard</h2>
-            </div>
+      {/* LEADERBOARD overlay */}
+      <div className="lg:hidden" style={overlayStyle(showRightOverlay, 'right')}>
+        <div style={{padding:'14px 16px',borderBottom:'1px solid rgba(255,255,255,0.07)',display:'flex',alignItems:'center',justifyContent:'space-between',background:'rgba(0,0,0,0.3)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'9px'}}>
+            <span style={{fontSize:'14px'}}>🏆</span>
+            <span style={{fontFamily:"'Orbitron',monospace",fontSize:'11px',fontWeight:700,letterSpacing:'0.12em',color:'#f5a623'}}>LEADERBOARD</span>
           </div>
-          
-          {/* Leaderboard Content */}
-          <div className="leaderboard-list flex-1 overflow-y-auto pr-1">
-            {players && players.length > 0 ? (
-              <div className="space-y-2">
-                {players.map((player, index) => (
-                  <div key={player.id} className={`rank-item flex items-center gap-3 p-3 rounded-lg border ${getRankStyle ? getRankStyle(index) : ''}`}>
-                    <div className="rank-icon w-8 h-8 rounded-full bg-black/20 flex items-center justify-center font-bold text-white">
+          <button onClick={closeOverlays} style={{padding:'5px 9px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'2px',color:'rgba(255,255,255,0.6)',cursor:'pointer',fontSize:'11px'}}>✕</button>
+        </div>
+        <div style={{flex:1,overflowY:'auto',padding:'12px',scrollbarWidth:'thin'}}>
+          {players && players.length > 0 ? (
+            <div>
+              {players.map((player, index) => {
+                const s = rankColors[getRankStyle ? getRankStyle(index) : ''] || {};
+                return (
+                  <div key={player.id} style={{
+                    display:'flex',alignItems:'center',gap:'10px',
+                    padding:'9px 11px',borderRadius:'3px',marginBottom:'6px',
+                    background:s.bg||'rgba(0,0,0,0.2)', border:`1px solid ${s.border||'rgba(255,255,255,0.07)'}`
+                  }}>
+                    <div style={{width:'26px',height:'26px',borderRadius:'50%',background:'rgba(0,0,0,0.3)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:index<3?'13px':'10px',fontFamily:"'Orbitron',monospace",fontWeight:700,color:'rgba(255,255,255,0.6)',flexShrink:0}}>
                       {getRankIcon ? getRankIcon(index) : index + 1}
                     </div>
-                    <div className="player-info flex-1 min-w-0">
-                      <div className="flex items-center gap-1">
-                        <p className="player-name-rank text-white font-medium truncate text-sm">{player.name}</p>
-                        {player.kingBadge && <span className="text-yellow-400 text-xs">👑</span>}
-                        <span className="text-white/40 text-[10px] ml-1">({player.mode})</span>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:'flex',alignItems:'center',gap:'4px'}}>
+                        <p style={{color:'rgba(255,255,255,0.8)',fontSize:'12px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'80px'}}>{player.name}</p>
+                        {player.kingBadge && <span style={{fontSize:'10px'}}>👑</span>}
+                        <span style={{color:'rgba(255,255,255,0.25)',fontSize:'9px'}}>{player.mode}</span>
                       </div>
-                      <p className="player-date text-white/40 text-[10px]">{player.date}</p>
+                      <p style={{color:'rgba(255,255,255,0.25)',fontSize:'9px'}}>{player.date}</p>
                     </div>
-                    <div className="player-score font-bold text-white bg-white/10 px-2 py-1 rounded min-w-[35px] text-center text-sm">
+                    <div style={{padding:'4px 8px',background:'rgba(0,229,200,0.08)',border:'1px solid rgba(0,229,200,0.2)',borderRadius:'2px',fontFamily:"'Orbitron',monospace",fontWeight:700,color:'#00e5c8',fontSize:'13px',minWidth:'34px',textAlign:'center'}}>
                       {player.score}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-leaderboard text-center py-8">
-                <p className="text-white/50 text-sm">No scores yet</p>
-                <p className="text-white/30 text-xs mt-1">Play a game to appear here!</p>
-              </div>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{textAlign:'center',padding:'40px 20px'}}>
+              <div style={{fontSize:'28px',marginBottom:'10px',opacity:0.2}}>🏆</div>
+              <p style={{color:'rgba(255,255,255,0.3)',fontSize:'12px'}}>No scores yet</p>
+              <p style={{color:'rgba(255,255,255,0.15)',fontSize:'10px',marginTop:'4px'}}>Play a game to appear here</p>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Backdrop */}
       {(showLeftOverlay || showRightOverlay) && (
-        <div className="overlay-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-40" onClick={closeOverlays}></div>
+        <div className="lg:hidden" onClick={closeOverlays} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',backdropFilter:'blur(4px)',zIndex:40}} />
       )}
     </>
   );

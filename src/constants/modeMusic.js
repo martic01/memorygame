@@ -13,7 +13,7 @@ export const modeMusic = {
   quickgame: {
     icon: '⚡',
     name: 'Quick Game',
-    music: [quickGameMusic],
+    music: [quickGameMusic,alanzx1, alanw2, alanha2, alaned3, alan3,alanedr3, alant3,alaner4, alansh4],
     theme: 'border-blue-400',
     loop: true
   },
@@ -27,7 +27,7 @@ export const modeMusic = {
   hard: {
     icon: '😇',
     name: 'Hard Mode',
-    music: [alanedr3, alant3],
+    music: [alanha2,alanedr3, alant3,alaned3, alan3],
     theme: 'border-orange-500 shadow-lg shadow-orange-500/50',
     loop: false
   },

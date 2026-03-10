@@ -2,133 +2,236 @@ import React from 'react';
 import { modeMusic } from '../constants/modeMusic';
 import { colors } from '../constants/colors';
 
+const colorMap = {
+  '1': { bg: '#dc2626', hover: '#ef4444' },
+  '2': { bg: '#2563eb', hover: '#3b82f6' },
+  '3': { bg: '#16a34a', hover: '#22c55e' },
+  '4': { bg: '#374151', hover: '#6b7280' },
+};
+
+const modeAccent = {
+  quickgame: '#3b82f6',
+  easy: '#22c55e',
+  hard: '#f5a623',
+  king: '#ff5f57',
+};
+
 const GameBoard = ({
-  playerName,
-  kingBadge,
-  gameStarted,
-  gameActive,
-  gameOver,
-  gameWon,
-  randomArray,
-  activeColor,
-  selectedMode,
-  isMuted,
-  toggleMute,
-  inactivitySeconds,
-  startGame,
-  handleColorClick,
-  getGlowStyle,
-  selectMode
+  playerName, kingBadge, gameStarted, gameActive, gameOver, gameWon,
+  randomArray, activeColor, selectedMode, isMuted, toggleMute,
+  inactivitySeconds, startGame, handleColorClick, getGlowStyle, selectMode
 }) => {
+  const accent = modeAccent[selectedMode] || '#00e5c8';
+
   return (
-    <div className={`glass-card game-board-card backdrop-blur-2xl bg-[#111928]/75 rounded-2xl p-4 sm:p-6 border-2 ${
-      modeMusic[selectedMode]?.theme || 'border-white/10'
-    }`}>
-      {/* Top Bar - Desktop */}
-      <div className="flex items-center w-full justify-between mb-4 pb-4 border-b border-white/10">
-        <div className="logo-container px-2 py-2 bg-white/5 rounded-xl border border-white/20">
-          <h1 className="game-title-small font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">🧠Memory🧠</h1>
+    <div style={{
+      background: '#10131e',
+      border: `1px solid rgba(255,255,255,0.07)`,
+      borderRadius: '4px',
+      overflow: 'hidden',
+      position: 'relative',
+      fontFamily: "'Share Tech Mono', monospace",
+      boxShadow: gameStarted && !gameOver && !gameWon ? `0 0 40px ${accent}15` : 'none',
+      transition: 'box-shadow 0.5s ease',
+      height: '97%',
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+    }}>
+      {/* Responsive width for mobile */}
+      <style>{`
+        @media (max-width: 800px) {
+          .game-board-container {
+            width: 100% !important;
+          }
+        }
+      `}</style>
+
+      {/* Accent top line */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: `linear-gradient(90deg,transparent,${accent},transparent)`, transition: 'background 0.3s', zIndex: 1, flexShrink: 0 }} />
+
+      {/* ── Top bar ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(0,0,0,0.25)', flexShrink: 0, flexWrap: 'wrap', gap: '8px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+          <span style={{ fontSize: '16px' }}>🧠</span>
+          <span style={{ fontFamily: "'Orbitron',monospace", fontWeight: 900, fontSize: '13px', letterSpacing: '0.1em', background: 'linear-gradient(135deg,#00e5c8,#3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>MEMORY</span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="player-badge px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30">
-            <div className="flex items-center gap-2">
-              <span className="text-white/60 text-sm">👤</span>
-              <p className="player-name text-white font-semibold text-sm sm:text-base max-w-[120px] truncate">{playerName}</p>
-              {kingBadge && <span className="text-yellow-400 text-sm">👑</span>}
-            </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 10px', background: 'rgba(0,229,200,0.06)', border: '1px solid rgba(0,229,200,0.15)', borderRadius: '3px' }}>
+            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px' }}>👤</span>
+            <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px', maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{playerName}</span>
+            {kingBadge && <span style={{ fontSize: '10px' }}>👑</span>}
           </div>
+
+          {gameStarted && !gameOver && !gameWon && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', background: 'rgba(245,166,35,0.06)', border: '1px solid rgba(245,166,35,0.25)', borderRadius: '3px' }}>
+              <span style={{ color: '#f5a623', fontSize: '11px' }}>⏱</span>
+              <span style={{ fontFamily: "'Orbitron',monospace", fontWeight: 700, fontSize: '12px', color: '#f5a623' }}>{inactivitySeconds}s</span>
+            </div>
+          )}
 
           <button
             onClick={toggleMute}
-            className="px-3 py-2 bg-white/10 rounded-xl border border-white/20 hover:bg-white/15 transition text-lg"
-          >
-            {isMuted ? '🔇' : '🔊'}
-          </button>
-
-          {/* Timer - Desktop */}
-          {gameStarted && !gameOver && !gameWon && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-yellow-500/10 rounded-xl border border-yellow-500/30">
-              <span className="text-yellow-400">⏱️</span>
-              <span className="text-white font-bold">{inactivitySeconds}s</span>
-            </div>
-          )}
+            style={{ padding: '5px 9px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3px', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+          >{isMuted ? '🔇' : '🔊'}</button>
         </div>
       </div>
 
-      {/* Mode Selection */}
-      <div className="mb-4">
-        <div className="flex flex-wrap items-center justify-center gap-2 lg:gap-3">
-          {Object.entries(modeMusic).map(([key, mode]) => (
+      {/* ── Mode selector ── */}
+      <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '5px', flexWrap: 'wrap', flexShrink: 0 }}>
+        {Object.entries(modeMusic).map(([key, mode]) => {
+          const isActive = selectedMode === key;
+          const ma = modeAccent[key] || '#00e5c8';
+          const disabled = gameStarted && !gameOver && !gameWon;
+          return (
             <button
               key={key}
               onClick={() => selectMode(key)}
-              disabled={gameStarted && !gameOver && !gameWon}
-              className={`px-4 py-2 rounded-xl border-2 transition-all duration-200 ${
-                selectedMode === key
-                  ? `${mode.theme} bg-white/20 scale-105`
-                  : 'border-white/10 bg-white/5 hover:bg-white/10'
-              } ${(gameStarted && !gameOver && !gameWon) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              disabled={disabled}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '5px',
+                padding: '5px 10px',
+                background: isActive ? `${ma}18` : 'rgba(0,0,0,0.2)',
+                border: `1px solid ${isActive ? ma : 'rgba(255,255,255,0.08)'}`,
+                borderRadius: '3px',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                opacity: disabled && !isActive ? 0.4 : 1,
+                transition: 'all 0.15s'
+              }}
             >
-              <span className="flex items-center gap-2">
-                <span className="text-xl">{mode.icon}</span>
-                <span className="text-white text-sm font-medium  sm:inline">{mode.name}</span>
-              </span>
-              {mode.name !== 'Quick Game' &&   <p className='text-white/60 text-xs mt-1'>finish song to win</p>}
+              <span style={{ fontSize: '12px' }}>{mode.icon}</span>
+              <span style={{ color: isActive ? ma : 'rgba(255,255,255,0.5)', fontSize: '10px', fontFamily: "'Orbitron',monospace", fontWeight: 700, letterSpacing: '0.04em' }}>{mode.name}</span>
             </button>
-            
-          ))}
+          );
+        })}
+      </div>
+
+      {/* ── Color grid — FIXED: removed aspect ratio constraint that caused clicking issues ── */}
+      <div style={{ 
+        flex: 1, 
+        minHeight: 0, 
+        padding: '12px 14px', 
+        background: 'rgba(0,0,0,0.15)', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
+        <div style={{
+          display: 'grid', 
+          gridTemplateColumns: '1fr 1fr',
+          gap: '12px',
+          width: '100%',
+          maxWidth: '380px',
+          // Removed aspectRatio constraint that was causing clicking issues
+        }}>
+          {colors.map((color) => {
+            const cm = colorMap[color.id] || {};
+            const isActive = activeColor === color.id;
+            const glowStyle = getGlowStyle(color);
+            const canClick = gameActive && !gameOver && !gameWon && gameStarted;
+            return (
+              <button
+                key={color.id}
+                id={color.id}
+                onClick={() => handleColorClick(color.id)}
+                disabled={!canClick}
+                style={{
+                  width: '100%',
+                  paddingBottom: '100%', // This creates a perfect square using padding
+                  position: 'relative',
+                  background: isActive ? cm.hover : cm.bg,
+                  border: `2px solid ${isActive ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.3)'}`,
+                  borderRadius: '6px',
+                  cursor: canClick ? 'pointer' : 'not-allowed',
+                  opacity: !canClick ? 0.75 : 1,
+                  transition: 'all 0.1s ease',
+                  overflow: 'hidden',
+                  transform: isActive ? 'scale(0.98)' : 'scale(1)',
+                  ...glowStyle
+                }}
+              >
+                {/* Inner decorative elements - positioned absolutely within the button */}
+                <div style={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  height: '45%', 
+                  background: 'linear-gradient(180deg,rgba(255,255,255,0.12) 0%,transparent 100%)', 
+                  borderRadius: '4px 4px 0 0', 
+                  pointerEvents: 'none' 
+                }} />
+                <div style={{ 
+                  position: 'absolute', 
+                  top: '5px', 
+                  left: '5px', 
+                  width: '8px', 
+                  height: '8px', 
+                  borderTop: '1.5px solid rgba(255,255,255,0.25)', 
+                  borderLeft: '1.5px solid rgba(255,255,255,0.25)',
+                  pointerEvents: 'none' 
+                }} />
+                <div style={{ 
+                  position: 'absolute', 
+                  bottom: '5px', 
+                  right: '5px', 
+                  width: '8px', 
+                  height: '8px', 
+                  borderBottom: '1.5px solid rgba(255,255,255,0.15)', 
+                  borderRight: '1.5px solid rgba(255,255,255,0.15)',
+                  pointerEvents: 'none' 
+                }} />
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Game board */}
-      <div className="board-container p-4 bg-white/5 rounded-xl">
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-[500px] mx-auto">
-          {colors.map((color) => (
-            <button
-              key={color.id}
-              id={color.id}
-              onClick={() => handleColorClick(color.id)}
-              disabled={!gameActive || gameOver || gameWon || !gameStarted}
-              style={getGlowStyle(color)}
-              className={`color-button aspect-square w-full max-w-[140px] mx-auto rounded-xl sm:rounded-2xl border-2 transition-all duration-200 ${color.bg} ${color.hoverBg} ${activeColor === color.id ? 'border-white scale-105' : 'border-white/10'} ${(!gameActive || gameOver || gameWon || !gameStarted) ? 'opacity-80 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}`}
-            >
-              <div className="glass-reflection absolute inset-0 bg-gradient-to-br from-white/30 to-transparent opacity-0 group-hover:opacity-20"></div>
-              <div className="inner-shadow absolute inset-0 bg-gradient-to-tl from-black/20 to-transparent"></div>
-              <div className="corner-accent top-left absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-white/30 rounded-tl-lg"></div>
-              <div className="corner-accent bottom-right absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-white/30 rounded-br-lg"></div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Control section */}
-      <div className="control-section flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t border-white/10">
-        <div className="status-container flex-1 w-full sm:w-auto">
-          <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
-            <div className={`status-dot w-2 h-2 rounded-full ${!gameActive && gameStarted && !gameOver && !gameWon ? 'bg-yellow-400 animate-pulse' : gameActive ? 'bg-green-400' : 'bg-gray-400'}`}></div>
-            <p className="status-text text-white/90 text-sm font-medium">
-              {!gameStarted ? 'Click Start to begin' :
-                !gameActive && !gameOver && !gameWon ? 'Watching sequence...' :
-                  gameActive ? `click ${randomArray.length} color${randomArray.length > 1 ? 's' : ''} that blinked` :
-                    gameWon ? 'Victory!' :
-                      gameOver ? 'Game Over' : 'Ready'}
-            </p>
-            <p className="level-text text-white/50 text-xs ml-auto">Lv.{randomArray.length}</p>
-          </div>
+      {/* ── Control bar ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', padding: '8px 14px', borderTop: '1px solid rgba(255,255,255,0.06)', flexWrap: 'wrap', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '130px', padding: '7px 11px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '3px' }}>
+          <div style={{
+            width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0,
+            background: !gameActive && gameStarted && !gameOver && !gameWon ? '#f5a623' : gameActive ? '#22c55e' : 'rgba(255,255,255,0.2)',
+            boxShadow: gameActive ? '0 0 8px #22c55e' : !gameActive && gameStarted ? '0 0 8px #f5a623' : 'none'
+          }} />
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', flex: 1 }}>
+            {!gameStarted ? 'Press START' :
+              !gameActive && !gameOver && !gameWon ? 'Watching...' :
+                gameActive ? `Click ${randomArray.length} color${randomArray.length !== 1 ? 's' : ''}` :
+                  gameWon ? 'Victory!' : gameOver ? 'Game Over' : 'Ready'}
+          </p>
+          <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '10px', fontFamily: "'Orbitron',monospace", flexShrink: 0 }}>LV{randomArray.length}</span>
         </div>
 
         <button
           onClick={startGame}
-          className="start-game-button w-full sm:w-auto px-6 py-2 bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-white font-semibold rounded-xl border border-white/30 hover:scale-105 transition flex items-center justify-center gap-2"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 16px',
+            background: 'transparent', border: `1px solid ${accent}`,
+            borderRadius: '3px', color: accent,
+            fontFamily: "'Orbitron',monospace", fontSize: '10px', fontWeight: 700,
+            letterSpacing: '0.12em', cursor: 'pointer', textTransform: 'uppercase',
+            transition: 'all 0.2s', whiteSpace: 'nowrap', flexShrink: 0
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = `${accent}15`; e.currentTarget.style.boxShadow = `0 0 20px ${accent}40`; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <span>▶</span> {randomArray.length > 0 ? 'New Game' : 'Start'}
+          ▶ {randomArray.length > 0 ? 'New Game' : 'Start'}
         </button>
       </div>
 
-      <div className="score-info mt-3 pt-3 text-center border-t border-white/5">
-        <p className="score-info-text text-white/40 text-xs">
-          Score = Colors remembered • {randomArray.length > 0 ? randomArray.length - 1 : 0} {randomArray.length - 1 === 1 ? 'color' : 'colors'}
+      {/* ── Score footer ── */}
+      <div style={{ padding: '5px 14px', borderTop: '1px solid rgba(255,255,255,0.04)', textAlign: 'center', flexShrink: 0 }}>
+        <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '10px', letterSpacing: '0.08em' }}>
+          Score · {Math.max(0, randomArray.length - 1)} colors remembered
         </p>
       </div>
     </div>
@@ -136,4 +239,3 @@ const GameBoard = ({
 };
 
 export default GameBoard;
-
